@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instructor Profile | LEVELUP📈</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/instructor.css">
+    <style>
+        /* Profile specific styles */
+        .profile-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .profile-sidebar {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .profile-main {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        .profile-avatar-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid var(--instructor-light);
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 10px 0 5px;
+            color: var(--instructor-dark);
+        }
+
+        .profile-role {
+            color: var(--instructor-primary);
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 10px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--instructor-primary);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .profile-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .profile-actions button {
+            background-color: var(--instructor-primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .profile-actions button:hover {
+            background-color: var(--instructor-dark);
+        }
+
+        .profile-section {
+            margin-bottom: 30px;
+        }
+
+        .profile-section h3 {
+            border-bottom: 2px solid var(--instructor-light);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            color: var(--instructor-dark);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .save-button {
+            background-color: var(--instructor-primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .save-button:hover {
+            background-color: var(--instructor-dark);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: #555;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .social-link:hover {
+            background-color: var(--instructor-primary);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .profile-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1><a href="../index.html">LEVELUP📈</a></h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="course-management.html">Courses</a></li>
+                    <li>
+                        <div class="user-profile">
+                            <img src="../assets/images/avatars/instructor-avatar.png" alt="Profile" class="profile-icon">
+                            <span class="profile-name">Professor Smith</span>
+                            <span id="user-dropdown">▼</span>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-profile">
+                    <img src="../assets/images/avatars/instructor-avatar.png" alt="Profile" class="profile-icon">
+                    <div class="profile-info">
+                        <h4>Professor Smith</h4>
+                        <p>Instructor</p>
+                    </div>
+                </div>
+                <h3>Instructor Portal</h3>
+                <p>Welcome back, Professor Smith!</p>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="dashboard.html">📊 Dashboard</a></li>
+                <li><a href="course-management.html">📚 Course Management</a></li>
+                <li><a href="student-management.html">🧑‍🎓 Student Management</a></li>
+                <li><a href="assignments.html">📝 Assignments</a></li>
+                <li><a href="earnings.html">💰 Earnings</a></li>
+                <li><a href="profile.html" class="active">👤 Profile</a></li>
+                <li><a href="../shared/login.html">🚪 Logout</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <h2>Instructor Profile</h2>
+                <p>Manage your personal information and settings</p>
+            </div>
+
+            <div class="profile-container">
+                <div class="profile-sidebar">
+                    <div class="profile-avatar-container">
+                        <img src="../assets/images/avatars/instructor-avatar.png" alt="Professor Smith" class="profile-avatar">
+                        <h3 class="profile-name">Professor Smith</h3>
+                        <p class="profile-role">Senior Instructor</p>
+                    </div>
+
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Courses</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">142</div>
+                            <div class="stat-label">Students</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">4.8</div>
+                            <div class="stat-label">Rating</div>
+                        </div>
+                    </div>
+
+                    <div class="profile-actions">
+                        <button>Edit Avatar</button>
+                    </div>
+                </div>
+
+                <div class="profile-main">
+                    <div class="profile-section">
+                        <h3>Personal Information</h3>
+                        <form>
+                            <div class="form-group">
+                                <label for="fullname">Full Name</label>
+                                <input type="text" id="fullname" value="Professor Smith" placeholder="Your full name">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" value="professor.smith@example.com" placeholder="Your email address">
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" value="+1 (555) 123-4567" placeholder="Your phone number">
+                            </div>
+                            <div class="form-group">
+                                <label for="bio">Biography</label>
+                                <textarea id="bio" placeholder="Tell students about yourself">Professor Smith is a dedicated educator with over 15 years of experience in teaching computer science and programming. He specializes in web development, data structures, and algorithms. His teaching philosophy focuses on practical, hands-on learning that prepares students for real-world challenges.</textarea>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="profile-section">
+                        <h3>Expertise & Qualifications</h3>
+                        <form>
+                            <div class="form-group">
+                                <label for="expertise">Areas of Expertise</label>
+                                <input type="text" id="expertise" value="Web Development, Data Structures, Algorithms" placeholder="Your areas of expertise">
+                            </div>
+                            <div class="form-group">
+                                <label for="education">Education</label>
+                                <input type="text" id="education" value="Ph.D. in Computer Science, Stanford University" placeholder="Your educational background">
+                            </div>
+                            <div class="form-group">
+                                <label for="experience">Professional Experience</label>
+                                <textarea id="experience" placeholder="Your professional experience">- Senior Developer at Tech Solutions Inc. (2010-2018)
+- Adjunct Professor at City University (2015-Present)
+- Technical Consultant for EdTech Startups (2018-Present)</textarea>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="profile-section">
+                        <h3>Social Media</h3>
+                        <form>
+                            <div class="form-group">
+                                <label for="website">Personal Website</label>
+                                <input type="url" id="website" value="https://professorsmith.com" placeholder="Your website URL">
+                            </div>
+                            <div class="form-group">
+                                <label for="linkedin">LinkedIn</label>
+                                <input type="url" id="linkedin" value="https://linkedin.com/in/professorsmith" placeholder="Your LinkedIn profile">
+                            </div>
+                            <div class="form-group">
+                                <label for="twitter">Twitter</label>
+                                <input type="url" id="twitter" value="https://twitter.com/profsmith" placeholder="Your Twitter profile">
+                            </div>
+                        </form>
+                        <div class="social-links">
+                            <a href="#" class="social-link">📘</a>
+                            <a href="#" class="social-link">🐦</a>
+                            <a href="#" class="social-link">📸</a>
+                            <a href="#" class="social-link">📱</a>
+                        </div>
+                    </div>
+
+                    <button class="save-button">Save Changes</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Toggle dropdown menu
+        document.getElementById('user-dropdown').addEventListener('click', function() {
+            // Add dropdown functionality here
+            console.log('Dropdown clicked');
+        });
+
+        // Form submission handling
+        document.querySelector('.save-button').addEventListener('click', function(e) {
+            e.preventDefault();
+            // Add form submission logic here
+            alert('Profile updated successfully!');
+        });
+    </script>
+</body>
+</html>

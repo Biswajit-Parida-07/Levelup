@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courses - LEVELUP📈</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .courses-container {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 30px;
+        }
+        
+        .courses-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .courses-header h2 {
+            color: #007bff;
+            margin-bottom: 15px;
+            font-size: 2.5rem;
+        }
+        
+        .courses-header p {
+            color: #6c757d;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .course-filters {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .filter-btn {
+            padding: 10px 18px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            margin-right: 5px;
+            letter-spacing: 0.5px;
+            color: #495057;
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+            transform: translateY(-2px) scale(1.05);
+        }
+        
+        .filter-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .filter-btn:hover::before {
+            left: 100%;
+        }
+        
+        .filter-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+            transition: all 0.1s ease;
+        }
+        
+        .search-box {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .search-box input {
+            padding: 12px 18px 12px 45px;
+            border: 1px solid #dee2e6;
+            border-radius: 30px;
+            width: 250px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+            color: #495057;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+            background-color: white;
+            width: 280px;
+        }
+        
+        .search-box input:hover {
+            border-color: #adb5bd;
+            background-color: #fff;
+        }
+        
+        .search-box input::placeholder {
+            color: #adb5bd;
+            transition: opacity 0.3s ease;
+        }
+        
+        .search-box input:focus::placeholder {
+            opacity: 0.5;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+        
+        .search-box:focus-within i {
+            color: #007bff;
+        }
+        
+        .search-box input.active-search {
+            background-color: #f0f8ff;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        }
+        
+        .search-match {
+            animation: highlight-pulse 1s ease;
+        }
+        
+        @keyframes highlight-pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); box-shadow: 0 8px 24px rgba(0, 123, 255, 0.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .course-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .course-image {
+            height: 180px;
+            background-color: #e9ecef;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .course-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .course-category {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background-color: rgba(0, 123, 255, 0.9);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .course-content {
+            padding: 20px;
+        }
+        
+        .course-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #343a40;
+        }
+        
+        .course-instructor {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .instructor-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            margin-right: 10px;
+            overflow: hidden;
+        }
+        
+        .instructor-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .course-meta {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 15px;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        .course-rating {
+            display: flex;
+            align-items: center;
+        }
+        
+        .course-rating i {
+            color: #ffc107;
+            margin-right: 5px;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 50px;
+        }
+        
+        .pagination-item {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #dee2e6;
+            margin: 0 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .pagination-item:hover, .pagination-item.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        
+        .enroll-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 123, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+        }
+        
+        .enroll-btn:hover {
+            background-color: #0069d9;
+            box-shadow: 0 6px 12px rgba(0, 123, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .enroll-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+        }
+        
+        .enroll-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .enroll-btn:hover::before {
+            left: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>LEVELUP📈</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="courses.html">Courses</a></li>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="register.html">Register</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="courses-container">
+        <div class="courses-header">
+            <h2>Explore Our Courses</h2>
+            <p>Discover a wide range of courses designed to help you advance your skills and achieve your goals.</p>
+        </div>
+
+        <div class="course-filters">
+            <div class="filter-group">
+                <button class="filter-btn active">All</button>
+                <button class="filter-btn">Development</button>
+                <button class="filter-btn">Design</button>
+                <button class="filter-btn">IT & Software</button>
+            </div>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search courses...">
+            </div>
+        </div>
+
+        <div class="courses-grid">
+            <!-- Course Card 1 -->
+            <div class="course-card">
+                <div class="course-image">
+                    <img src="../assets/images/webdev.jpg" alt="Web Development">
+                    <div class="course-category">Development</div>
+                </div>
+                <div class="course-content">
+                    <h3 class="course-title">Complete Web Development Bootcamp</h3>
+                    <div class="course-instructor">
+                        <div class="instructor-avatar">
+                            <img src="../assets/images/prof1.jpg" alt="Instructor">
+                        </div>
+                        <span>John Smith</span>
+                    </div>
+                    <div class="course-meta">
+                        <div class="course-rating">
+                            <i class="fas fa-star"></i>
+                            <span>4.8 (245)</span>
+                        </div>
+                        <div class="course-students">
+                            <i class="fas fa-user"></i>
+                            <span>1,200 students</span>
+                        </div>
+                    </div>
+                    <a href="payment.html?id=1" class="enroll-btn">Enroll Now</a>
+                </div>
+            </div>
+
+            <!-- Course Card 3 -->
+            <div class="course-card">
+                <div class="course-image">
+                    <img src="../assets/images/uiux.jpeg" alt="UI/UX Design">
+                    <div class="course-category">Design</div>
+                </div>
+                <div class="course-content">
+                    <h3 class="course-title">UI/UX Design Masterclass</h3>
+                    <div class="course-instructor">
+                        <div class="instructor-avatar">
+                            <img src="../assets/images/prof2.jpg" alt="Instructor">
+                        </div>
+                        <span>Michael Chen</span>
+                    </div>
+                    <div class="course-meta">
+                        <div class="course-rating">
+                            <i class="fas fa-star"></i>
+                            <span>4.9 (320)</span>
+                        </div>
+                        <div class="course-students">
+                            <i class="fas fa-user"></i>
+                            <span>1,500 students</span>
+                        </div>
+                    </div>
+                    <a href="payment.html?id=3" class="enroll-btn">Enroll Now</a>
+                </div>
+            </div>
+
+            <!-- Course Card 5 -->
+            <div class="course-card">
+                <div class="course-image">
+                    <img src="../assets/images/aiml.jpeg" alt="Data Science">
+                    <div class="course-category">Development</div>
+                </div>
+                <div class="course-content">
+                    <h3 class="course-title">Machine Learning</h3>
+                    <div class="course-instructor">
+                        <div class="instructor-avatar">
+                            <img src="../assets/images/prof3.jpg" alt="Instructor">
+                        </div>
+                        <span>David Kim</span>
+                    </div>
+                    <div class="course-meta">
+                        <div class="course-rating">
+                            <i class="fas fa-star"></i>
+                            <span>4.8 (278)</span>
+                        </div>
+                        <div class="course-students">
+                            <i class="fas fa-user"></i>
+                            <span>1,350 students</span>
+                        </div>
+                    </div>
+                    <a href="payment.html?id=5" class="enroll-btn">Enroll Now</a>
+                </div>
+            </div>
+
+            <!-- Course Card 7: Python Programming -->
+            <div class="course-card">
+                <div class="course-image">
+                    <img src="../assets/images/python.jpg" alt="Python Programming">
+                    <div class="course-category">Development</div>
+                </div>
+                <div class="course-content">
+                    <h3 class="course-title">Python Programming</h3>
+                    <div class="course-instructor">
+                        <div class="instructor-avatar">
+                            <img src="../assets/images/prof3.jpg" alt="Instructor">
+                        </div>
+                        <span>Alex Johnson</span>
+                    </div>
+                    <div class="course-meta">
+                        <div class="course-rating">
+                            <i class="fas fa-star"></i>
+                            <span>4.9 (320)</span>
+                        </div>
+                        <div class="course-students">
+                            <i class="fas fa-user"></i>
+                            <span>2,100 students</span>
+                        </div>
+                    </div>
+                    <a href="payment.html?id=7" class="enroll-btn">Enroll Now</a>
+                </div>
+            </div>
+
+            <!-- Course Card 8: Java Programming -->
+            <div class="course-card">
+                <div class="course-image">
+                    <img src="../assets/images/java.jpeg" alt="Java Programming">
+                    <div class="course-category">Development</div>
+                </div>
+                <div class="course-content">
+                    <h3 class="course-title">Java Programming</h3>
+                    <div class="course-instructor">
+                        <div class="instructor-avatar">
+                            <img src="../assets/images/prof4.jpg" alt="Instructor">
+                        </div>
+                        <span>Samantha Lee</span>
+                    </div>
+                    <div class="course-meta">
+                        <div class="course-rating">
+                            <i class="fas fa-star"></i>
+                            <span>4.7 (285)</span>
+                        </div>
+                        <div class="course-students">
+                            <i class="fas fa-user"></i>
+                            <span>1,850 students</span>
+                        </div>
+                    </div>
+                    <a href="payment.html?id=8" class="enroll-btn">Enroll Now</a>
+                </div>
+            </div>
+
+            <!-- Course Card 9: Linux Administration -->
+            <div class="course-card">
+                <div class="course-image">
+                    <img src="../assets/images/linux.png" alt="Linux Administration">
+                    <div class="course-category">IT & Software</div>
+                </div>
+                <div class="course-content">
+                    <h3 class="course-title">Linux Administration</h3>
+                    <div class="course-instructor">
+                        <div class="instructor-avatar">
+                            <img src="../assets/images/prof5.jpg" alt="Instructor">
+                        </div>
+                        <span>James Roberts</span>
+                    </div>
+                    <div class="course-meta">
+                        <div class="course-rating">
+                            <i class="fas fa-star"></i>
+                            <span>4.8 (210)</span>
+                        </div>
+                        <div class="course-students">
+                            <i class="fas fa-user"></i>
+                            <span>1,450 students</span>
+                        </div>
+                    </div>
+                    <a href="payment.html?id=9" class="enroll-btn">Enroll Now</a>
+                </div>
+            </div>
+
+            <!-- Course Card 10: IoT Fundamentals -->
+            <div class="course-card">
+                <div class="course-image">
+                    <img src="../assets/images/iot.jpeg" alt="IoT Fundamentals">
+                    <div class="course-category">IT & Software</div>
+                </div>
+                <div class="course-content">
+                    <h3 class="course-title">IoT Fundamentals</h3>
+                    <div class="course-instructor">
+                        <div class="instructor-avatar">
+                            <img src="../assets/images/prof6.jpg" alt="Instructor">
+                        </div>
+                        <span>Lisa Wong</span>
+                    </div>
+                    <div class="course-meta">
+                        <div class="course-rating">
+                            <i class="fas fa-star"></i>
+                            <span>4.6 (175)</span>
+                        </div>
+                        <div class="course-students">
+                            <i class="fas fa-user"></i>
+                            <span>950 students</span>
+                        </div>
+                    </div>
+                    <a href="payment.html?id=10" class="enroll-btn">Enroll Now</a>
+                </div>
+            </div>
+
+            <!-- Course Card 11: Advanced Operating System -->
+            <div class="course-card">
+                <div class="course-image">
+                    <img src="../assets/images/os.jpg" alt="Advanced Operating System">
+                    <div class="course-category">IT & Software</div>
+                </div>
+                <div class="course-content">
+                    <h3 class="course-title">Advanced Operating System</h3>
+                    <div class="course-instructor">
+                        <div class="instructor-avatar">
+                            <img src="../assets/images/prof7.jpg" alt="Instructor">
+                        </div>
+                        <span>Daniel Morris</span>
+                    </div>
+                    <div class="course-meta">
+                        <div class="course-rating">
+                            <i class="fas fa-star"></i>
+                            <span>4.7 (195)</span>
+                        </div>
+                        <div class="course-students">
+                            <i class="fas fa-user"></i>
+                            <span>1,050 students</span>
+                        </div>
+                    </div>
+                    <a href="payment.html?id=11" class="enroll-btn">Enroll Now</a>
+                </div>
+            </div>
+
+            <!-- Course Card 12: Cloud Computing and DevOps -->
+            <div class="course-card">
+                <div class="course-image">
+                    <img src="../assets/images/cc.jpeg" alt="Cloud Computing and DevOps">
+                    <div class="course-category">IT & Software</div>
+                </div>
+                <div class="course-content">
+                    <h3 class="course-title">Cloud Computing and DevOps</h3>
+                    <div class="course-instructor">
+                        <div class="instructor-avatar">
+                            <img src="../assets/images/prof8.jpg" alt="Instructor">
+                        </div>
+                        <span>Rachel Green</span>
+                    </div>
+                    <div class="course-meta">
+                        <div class="course-rating">
+                            <i class="fas fa-star"></i>
+                            <span>4.9 (310)</span>
+                        </div>
+                        <div class="course-students">
+                            <i class="fas fa-user"></i>
+                            <span>1,780 students</span>
+                        </div>
+                    </div>
+                    <a href="payment.html?id=12" class="enroll-btn">Enroll Now</a>
+                </div>
+            </div>
+
+            <!-- Course Card 13: MERN Stack Development -->
+            <div class="course-card">
+                <div class="course-image">
+                    <img src="../assets/images/m.jpg" alt="MERN Stack Development">
+                    <div class="course-category">Development</div>
+                </div>
+                <div class="course-content">
+                    <h3 class="course-title">MERN Stack Development</h3>
+                    <div class="course-instructor">
+                        <div class="instructor-avatar">
+                            <img src="../assets/images/prof4.jpg" alt="Instructor">
+                        </div>
+                        <span>Marcus Patel</span>
+                    </div>
+                    <div class="course-meta">
+                        <div class="course-rating">
+                            <i class="fas fa-star"></i>
+                            <span>4.8 (265)</span>
+                        </div>
+                        <div class="course-students">
+                            <i class="fas fa-user"></i>
+                            <span>1,620 students</span>
+                        </div>
+                    </div>
+                    <a href="payment.html?id=13" class="enroll-btn">Enroll Now</a>
+                </div>
+            </div>
+
+            <!-- Course Card 14: Artificial Intelligence -->
+            <div class="course-card">
+                <div class="course-image">
+                    <img src="../assets/images/ai.jpg" alt="Artificial Intelligence">
+                    <div class="course-category">Development</div>
+                </div>
+                <div class="course-content">
+                    <h3 class="course-title">Artificial Intelligence Fundamentals</h3>
+                    <div class="course-instructor">
+                        <div class="instructor-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span>Emily Watson</span>
+                    </div>
+                    <div class="course-meta">
+                        <div class="course-rating">
+                            <i class="fas fa-star"></i>
+                            <span>4.9 (310)</span>
+                        </div>
+                        <div class="course-students">
+                            <i class="fas fa-user"></i>
+                            <span>1,850 students</span>
+                        </div>
+                    </div>
+                    <a href="payment.html?id=14" class="enroll-btn">Enroll Now</a>
+                </div>
+            </div>
+
+            <!-- Course Card 15: Mobile App Development -->
+            <div class="course-card">
+                <div class="course-image">
+                    <img src="../assets/images/mad.jpg" alt="Mobile App Development">
+                    <div class="course-category">Development</div>
+                </div>
+                <div class="course-content">
+                    <h3 class="course-title">Mobile App Development</h3>
+                    <div class="course-instructor">
+                        <div class="instructor-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span>Ryan Cooper</span>
+                    </div>
+                    <div class="course-meta">
+                        <div class="course-rating">
+                            <i class="fas fa-star"></i>
+                            <span>4.7 (285)</span>
+                        </div>
+                        <div class="course-students">
+                            <i class="fas fa-user"></i>
+                            <span>1,720 students</span>
+                        </div>
+                    </div>
+                    <a href="payment.html?id=15" class="enroll-btn">Enroll Now</a>
+                </div>
+            </div>
+
+            <!-- Course Card 16: Cybersecurity -->
+            <div class="course-card">
+                <div class="course-image">
+                    <img src="../assets/images/CS.jpeg" alt="Cybersecurity">
+                    <div class="course-category">IT & Software</div>
+                </div>
+                <div class="course-content">
+                    <h3 class="course-title">Cybersecurity Fundamentals</h3>
+                    <div class="course-instructor">
+                        <div class="instructor-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span>Jennifer Hayes</span>
+                    </div>
+                    <div class="course-meta">
+                        <div class="course-rating">
+                            <i class="fas fa-star"></i>
+                            <span>4.9 (325)</span>
+                        </div>
+                        <div class="course-students">
+                            <i class="fas fa-user"></i>
+                            <span>2,150 students</span>
+                        </div>
+                    </div>
+                    <a href="payment.html?id=16" class="enroll-btn">Enroll Now</a>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <script>
+        // Filter functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.querySelector('.search-box input');
+            
+            // Filter button functionality
+            document.querySelectorAll('.filter-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    // Remove active class from all buttons
+                    document.querySelectorAll('.filter-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked button
+                    button.classList.add('active');
+                    
+                    // Apply filters with the new category
+                    applyFilters();
+                });
+            });
+            
+            // Search functionality
+            searchInput.addEventListener('input', () => {
+                // Apply filters as user types
+                applyFilters();
+                
+                // Add visual feedback when searching
+                if (searchInput.value.trim() !== '') {
+                    searchInput.classList.add('active-search');
+                } else {
+                    searchInput.classList.remove('active-search');
+                }
+            });
+            
+            // Add search on Enter key press
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    applyFilters();
+                }
+            });
+            
+            // Combine filter and search
+            function applyFilters() {
+                const selectedCategory = document.querySelector('.filter-btn.active').textContent.trim();
+                const searchTerm = searchInput.value.toLowerCase();
+                
+                const courseCards = document.querySelectorAll('.course-card');
+                let visibleCoursesCount = 0;
+                
+                courseCards.forEach(card => {
+                    const courseTitle = card.querySelector('.course-title').textContent.toLowerCase();
+                    const courseCategory = card.querySelector('.course-category').textContent;
+                    const instructorName = card.querySelector('.course-instructor span').textContent.toLowerCase();
+                    
+                    const matchesCategory = (selectedCategory === 'All' || courseCategory === selectedCategory);
+                    const matchesSearch = (searchTerm === '' || 
+                                         courseTitle.includes(searchTerm) || 
+                                         courseCategory.toLowerCase().includes(searchTerm) || 
+                                         instructorName.includes(searchTerm));
+                    
+                    if (matchesCategory && matchesSearch) {
+                        card.style.display = 'block';
+                        visibleCoursesCount++;
+                        // Add highlight effect to matching text if searching
+                        if (searchTerm !== '') {
+                            // Add a subtle highlight animation
+                            card.classList.add('search-match');
+                            setTimeout(() => {
+                                card.classList.remove('search-match');
+                            }, 1000);
+                        }
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                // Update search icon color based on results
+                const searchIcon = document.querySelector('.search-box i');
+                if (searchTerm !== '') {
+                    if (visibleCoursesCount > 0) {
+                        searchIcon.style.color = '#28a745'; // Green for results found
+                    } else {
+                        searchIcon.style.color = '#dc3545'; // Red for no results
+                    }
+                } else {
+                    searchIcon.style.color = '#6c757d'; // Default color
+                }
+                
+                // Display a message when no courses match the search
+                const coursesGrid = document.querySelector('.courses-grid');
+                let noResultsMsg = document.querySelector('.no-results-message');
+                
+                if (visibleCoursesCount === 0) {
+                    if (!noResultsMsg) {
+                        noResultsMsg = document.createElement('div');
+                        noResultsMsg.className = 'no-results-message';
+                        noResultsMsg.style.textAlign = 'center';
+                        noResultsMsg.style.padding = '30px';
+                        noResultsMsg.style.color = '#6c757d';
+                        noResultsMsg.style.fontSize = '1.2rem';
+                        noResultsMsg.style.width = '100%';
+                        coursesGrid.parentNode.insertBefore(noResultsMsg, coursesGrid.nextSibling);
+                    }
+                    noResultsMsg.innerHTML = `<i class="fas fa-search" style="font-size: 2rem; margin-bottom: 15px; color: #dc3545;"></i><br>No courses found matching "${searchTerm}"${selectedCategory !== 'All' ? ` in ${selectedCategory}` : ''}`;
+                    noResultsMsg.style.display = 'block';
+                } else if (noResultsMsg) {
+                    noResultsMsg.style.display = 'none';
+                }
+            }
+            
+            // Initial filter application
+            applyFilters();
+        });
+    </script>
+</body>
+</html>

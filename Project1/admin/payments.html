@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Management - LMS Platform</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+    <style>
+        /* Payment Management specific styles */
+        .dashboard-container {
+            display: flex;
+            min-height: calc(100vh - 70px);
+        }
+        
+        .sidebar {
+            width: 250px;
+            background-color: #343a40;
+            color: white;
+            padding: 20px 0;
+            position: fixed;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+        
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-header h3 {
+            color: #007bff;
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-menu li a {
+            display: block;
+            padding: 10px 20px;
+            color: #adb5bd;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .sidebar-menu li a:hover, .sidebar-menu li a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left: 4px solid #007bff;
+        }
+        
+        .sidebar-menu li a.active {
+            color: white;
+            font-weight: 500;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            margin-left: 250px;
+            background-color: #f8f9fa;
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .page-header h2 {
+            margin-bottom: 10px;
+            color: #343a40;
+        }
+
+        .action-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-button:hover {
+            background-color: #0069d9;
+        }
+
+        .filter-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+            position: relative;
+            flex: 1;
+        }
+
+        .filter-group label {
+            font-size: 13px;
+            color: #6c757d;
+            margin-bottom: 8px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .filter-group:hover label {
+            color: #007bff;
+        }
+
+        .filter-group select, .filter-group input {
+            padding: 10px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 30px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+            color: #495057;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23007bff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 12px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .filter-group select:focus, .filter-group input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+            background-color: white;
+        }
+        
+        .filter-group select:hover, .filter-group input:hover {
+            border-color: #007bff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Custom styling for date dropdown */
+        #date-range {
+            background-color: rgba(23, 162, 184, 0.03);
+            border-left: 3px solid #17a2b8;
+        }
+        
+        #date-range:focus {
+            background-color: rgba(23, 162, 184, 0.06);
+        }
+        
+        /* Custom styling for status dropdown */
+        #payment-status {
+            background-color: rgba(40, 167, 69, 0.03);
+            border-left: 3px solid #28a745;
+        }
+        
+        #payment-status:focus {
+            background-color: rgba(40, 167, 69, 0.06);
+        }
+        
+        /* Custom styling for payment method dropdown */
+        #payment-method {
+            background-color: rgba(255, 193, 7, 0.03);
+            border-left: 3px solid #ffc107;
+        }
+        
+        #payment-method:focus {
+            background-color: rgba(255, 193, 7, 0.06);
+        }
+
+        .search-container {
+            flex-grow: 1.5;
+            position: relative;
+            min-width: 300px;
+        }
+
+        .search-container label {
+            font-size: 13px;
+            color: #6c757d;
+            margin-bottom: 8px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.3s ease;
+        }
+        
+        .search-container:hover label {
+            color: #007bff;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border: 1px solid #e0e0e0;
+            border-radius: 30px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+            color: #495057;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-container input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+            background-color: white;
+        }
+        
+        .search-container input:hover {
+            border-color: #007bff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-container::before {
+            content: '🔍';
+            position: absolute;
+            left: 15px;
+            top: 62%;
+            transform: translateY(-50%);
+            color: #007bff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+        
+        .search-container:focus-within::before {
+            color: #0056b3;
+        }
+        
+        /* Status-specific option styling */
+        #payment-status option[value="completed"] {
+            color: #28a745;
+            font-weight: 500;
+        }
+        
+        #payment-status option[value="pending"] {
+            color: #ffc107;
+            font-weight: 500;
+        }
+        
+        #payment-status option[value="failed"] {
+            color: #dc3545;
+            font-weight: 500;
+        }
+        
+        #payment-status option[value="refunded"] {
+            color: #6c757d;
+            font-weight: 500;
+        }
+        
+        /* Payment method-specific option styling */
+        #payment-method option[value="credit"] {
+            color: #007bff;
+            font-weight: 500;
+        }
+        
+        #payment-method option[value="debit"] {
+            color: #28a745;
+            font-weight: 500;
+        }
+        
+        #payment-method option[value="paypal"] {
+            color: #17a2b8;
+            font-weight: 500;
+        }
+        
+        #payment-method option[value="bank"] {
+            color: #6c757d;
+            font-weight: 500;
+        }
+        
+        /* Active filter styling */
+        .filter-active {
+            background-color: rgba(0, 123, 255, 0.08);
+            border-color: #007bff;
+            font-weight: 500;
+        }
+
+        .tabs-container {
+            margin-bottom: 20px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 5px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            border-bottom-color: #007bff;
+            color: #007bff;
+        }
+
+        .tab:hover:not(.active) {
+            border-bottom-color: #dee2e6;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgba(0, 123, 255, 0.1);
+            color: #007bff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-right: 15px;
+        }
+        
+        .stat-info h3 {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+        
+        .stat-info p {
+            font-size: 20px;
+            font-weight: 600;
+            color: #343a40;
+            margin: 0;
+        }
+
+        .data-table {
+            width: 100%;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .data-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th, .data-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .data-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .data-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-completed {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
+        .status-pending {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+        
+        .status-failed {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .status-refunded {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .action-btn-view {
+            background-color: rgba(0, 123, 255, 0.1);
+            color: #007bff;
+        }
+        
+        .action-btn-refund {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 60%;
+            max-width: 700px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            color: #343a40;
+            margin-bottom: 5px;
+        }
+
+        .transaction-details {
+            margin-bottom: 30px;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 15px;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .detail-label {
+            width: 40%;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .detail-value {
+            width: 60%;
+            color: #343a40;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+            gap: 5px;
+        }
+
+        .pagination-item {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            background-color: white;
+            border: 1px solid #dee2e6;
+            cursor: pointer;
+            color: #007bff;
+        }
+
+        .pagination-item.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .pagination-item:hover:not(.active) {
+            background-color: #f8f9fa;
+        }
+
+        .amount-positive {
+            color: #28a745;
+        }
+
+        .amount-negative {
+            color: #dc3545;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: static;
+                height: auto;
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .filter-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .filter-group {
+                width: 100%;
+            }
+
+            .modal-content {
+                width: 90%;
+                margin: 20% auto;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                overflow-x: auto;
+                padding-bottom: 5px;
+            }
+        }
+
+        /* Search select wrapper styling */
+        .search-select-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-select-wrapper input.method-search {
+            width: 100%;
+            padding: 7px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            margin-bottom: 5px;
+            font-size: 13px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+        }
+
+        .search-select-wrapper input.method-search:focus {
+            border-color: #80bdff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+        }
+
+        /* Filter active state */
+        select.filter-active {
+            border-color: #007bff !important;
+            background-color: rgba(0,123,255,0.05) !important;
+            font-weight: 500;
+        }
+
+        /* No results message */
+        #no-results {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        #reset-filters:hover {
+            text-decoration: underline;
+        }
+
+        /* Payment method option colors */
+        #payment-method option[value="credit"] {
+            color: #007bff;
+            font-weight: 500;
+        }
+
+        #payment-method option[value="debit"] {
+            color: #28a745;
+            font-weight: 500;
+        }
+
+        #payment-method option[value="paypal"] {
+            color: #17a2b8;
+            font-weight: 500;
+        }
+
+        #payment-method option[value="bank"] {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        #payment-method option[value="wallet"] {
+            color: #6610f2;
+            font-weight: 500;
+        }
+
+        /* Status option colors */
+        #payment-status option[value="completed"] {
+            color: #28a745;
+            font-weight: 500;
+        }
+
+        #payment-status option[value="pending"] {
+            color: #ffc107;
+            font-weight: 500;
+        }
+
+        #payment-status option[value="failed"] {
+            color: #dc3545;
+            font-weight: 500;
+        }
+
+        #payment-status option[value="refunded"] {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        /* Animation for the filter icons */
+        .filter-group label {
+            position: relative;
+            transition: transform 0.2s ease;
+        }
+
+        .filter-group:hover label {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1><a href="../index.html">LMS Platform</a></h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="payments.html" class="active">Payments</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3>Admin Portal</h3>
+                <p>Welcome back, LBC!</p>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="dashboard.html">📊 Dashboard</a></li>
+                <li><a href="users.html">👥 User Management</a></li>
+                <li><a href="courses.html">📚 Course Management</a></li>
+                <li><a href="payments.html" class="active">💰 Payment Management</a></li>
+                <li><a href="support-helpdesk.html">🎧 Support Help Desk</a></li>
+                <li><a href="../shared/login.html">🚪 Logout</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <h2>Payment Management</h2>
+                <button class="action-button">+ New Transaction</button>
+            </div>
+
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <h3>Total Revenue</h3>
+                        <p>₹2,062,550.00</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <h3>This Month</h3>
+                        <p>₹438,240.00</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏳</div>
+                    <div class="stat-info">
+                        <h3>Pending Payments</h3>
+                        <p>8</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">❌</div>
+                    <div class="stat-info">
+                        <h3>Failed Transactions</h3>
+                        <p>1</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-container">
+                <div class="filter-group">
+                    <label for="date-range">📅 Date Range</label>
+                    <select id="date-range">
+                        <option value="all">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month" selected>This Month</option>
+                        <option value="custom">Custom Range</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="payment-status">🔄 Payment Status</label>
+                    <select id="payment-status">
+                        <option value="all" selected>All Status</option>
+                        <option value="completed">Completed</option>
+                        <option value="pending">Pending</option>
+                        <option value="failed">Failed</option>
+                        <option value="refunded">Refunded</option>
+                    </select>
+                </div>
+                <div class="search-container">
+                    <label for="search">🔎 Search Transactions</label>
+                    <input type="text" id="search" placeholder="Search by name, email, transaction ID...">
+                </div>
+            </div>
+
+            <div class="tabs-container">
+                <div class="tabs">
+                    <div class="tab active" data-tab="all">All Transactions</div>
+                    <div class="tab" data-tab="pending">Pending</div>
+                    <div class="tab" data-tab="completed">Completed</div>
+                    <div class="tab" data-tab="failed">Failed</div>
+                    <div class="tab" data-tab="refunded">Refunded</div>
+                </div>
+            </div>
+
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Transaction ID</th>
+                            <th>Date</th>
+                            <th>Student</th>
+                            <th>Course</th>
+                            <th>Amount</th>
+                            <th>Payment Method</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>TRX-2023-10-15-001</td>
+                            <td>Jan 15, 2025</td>
+                            <td>Soumya Samikshya Samal</td>
+                            <td>Web Development</td>
+                            <td>₹10,789.17</td>
+                            <td>Credit Card</td>
+                            <td><span class="status-badge status-completed">Completed</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn action-btn-view">View</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>TRX-2023-10-18-002</td>
+                            <td>Oct 18, 2023</td>
+                            <td>Michael Brown</td>
+                            <td>Machine Learning</td>
+                            <td>₹12,449.17</td>
+                            <td>UPI</td>
+                            <td><span class="status-badge status-completed">Completed</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn action-btn-view">View</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>TRX-2023-10-20-003</td>
+                            <td>Oct 20, 2023</td>
+                            <td>Emily Davis</td>
+                            <td>UX/UI Design Masterclass</td>
+                            <td>₹16,599.17</td>
+                            <td>Credit Card</td>
+                            <td><span class="status-badge status-pending">Pending</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn action-btn-view">View</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>TRX-2023-10-21-004</td>
+                            <td>Oct 21, 2023</td>
+                            <td>James Wilson</td>
+                            <td>IOT</td>
+                            <td>₹14,939.17</td>
+                            <td>Debit Card</td>
+                            <td><span class="status-badge status-failed">Failed</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn action-btn-view">View</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>TRX-2023-10-22-005</td>
+                            <td>Oct 22, 2023</td>
+                            <td>Jennifer Lee</td>
+                            <td>Digital Marketing Essentials</td>
+                            <td>₹7,654</td>
+                            <td>UPI</td>
+                            <td><span class="status-badge status-completed">Completed</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn action-btn-view">View</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>TRX-2023-10-23-006</td>
+                            <td>Oct 23, 2023</td>
+                            <td>Robert Garcia</td>
+                            <td>Python Programming</td>
+                            <td>₹10,234</td>
+                            <td>Credit Card</td>
+                            <td><span class="status-badge status-pending">Pending</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn action-btn-view">View</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>TRX-2023-10-24-007</td>
+                            <td>Oct 24, 2023</td>
+                            <td>Lisa Martinez</td>
+                            <td>MERN Stack</td>
+                            <td>₹8,514</td>
+                            <td>Bank Transfer</td>
+                            <td><span class="status-badge status-pending">Pending</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn action-btn-view">View</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>TRX-2023-10-25-008</td>
+                            <td>Oct 25, 2023</td>
+                            <td>David Thompson</td>
+                            <td>Artificial Intelligence</td>
+                            <td>₹21,414</td>
+                            <td>Credit Card</td>
+                            <td><span class="status-badge status-completed">Completed</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn action-btn-view">View</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>TRX-2023-10-26-009</td>
+                            <td>Oct 26, 2023</td>
+                            <td>Michelle Rodriguez</td>
+                            <td>Business Analytics</td>
+                            <td>₹13,674</td>
+                            <td>UPI</td>
+                            <td><span class="status-badge status-refunded">Refunded</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn action-btn-view">View</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>TRX-2023-10-27-010</td>
+                            <td>Oct 27, 2023</td>
+                            <td>Kevin Anderson</td>
+                            <td>Cybersecurity Fundamentals</td>
+                            <td>₹17,114</td>
+                            <td>Debit Card</td>
+                            <td><span class="status-badge status-pending">Pending</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn action-btn-view">View</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Payment Details Modal -->
+            <div id="payment-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close-modal">&times;</span>
+                    <div class="modal-header">
+                        <h3>Transaction Details</h3>
+                        <p>Transaction ID: <span id="modal-transaction-id">TRX-2023-10-15-001</span></p>
+                    </div>
+                    <div class="transaction-details">
+                        <div class="detail-row">
+                            <div class="detail-label">Date & Time</div>
+                            <div class="detail-value">October 15, 2023 - 14:32:45</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Student</div>
+                            <div class="detail-value">Sarah Johnson (sarah.j@example.com)</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Course</div>
+                            <div class="detail-value">Advanced Web Development</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Amount</div>
+                            <div class="detail-value">₹129.99</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Payment Method</div>
+                            <div class="detail-value">Credit Card (Visa ending in 4567)</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Status</div>
+                            <div class="detail-value"><span class="status-badge status-completed">Completed</span></div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Billing Address</div>
+                            <div class="detail-value">123 Main St, Apt 4B<br>New York, NY 10001<br>United States</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary">Close</button>
+                        <button class="btn btn-primary">Download Receipt</button>
+                        <button class="btn btn-danger">Issue Refund</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Modal functionality
+            const viewButtons = document.querySelectorAll('.action-btn-view');
+            const modal = document.getElementById('payment-modal');
+            const closeModal = document.querySelector('.close-modal');
+            const closeBtn = document.querySelector('.btn-secondary');
+            
+            viewButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    modal.style.display = 'block';
+                });
+            });
+            
+            closeModal.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+            
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    modal.style.display = 'none';
+                });
+            }
+            
+            window.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+            
+            // Payment Method Search Functionality
+            const methodSearch = document.querySelector('.method-search');
+            const methodDropdown = document.getElementById('payment-method');
+            const methodOptions = Array.from(methodDropdown.options);
+            
+            if (methodSearch) {
+                methodSearch.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    
+                    // First, hide all options
+                    methodOptions.forEach(option => {
+                        option.style.display = 'none';
+                    });
+                    
+                    // Show options that match the search
+                    const matchingOptions = methodOptions.filter(option => 
+                        option.text.toLowerCase().includes(searchTerm)
+                    );
+                    
+                    matchingOptions.forEach(option => {
+                        option.style.display = '';
+                    });
+                    
+                    // Show "All Methods" option always
+                    methodOptions[0].style.display = '';
+                });
+            }
+            
+            // Filter functionality
+            const dateFilter = document.getElementById('date-range');
+            const statusFilter = document.getElementById('payment-status');
+            const methodFilter = document.getElementById('payment-method');
+            const searchInput = document.getElementById('search');
+            
+            // Add change listeners to all filters
+            dateFilter.addEventListener('change', function() {
+                applyFilters();
+                toggleActiveClass(this);
+            });
+            
+            statusFilter.addEventListener('change', function() {
+                applyFilters();
+                toggleActiveClass(this);
+            });
+            
+            methodFilter.addEventListener('change', function() {
+                applyFilters();
+                toggleActiveClass(this);
+            });
+            
+            searchInput.addEventListener('input', function() {
+                applyFilters();
+            });
+            
+            // Apply "active" class to filters when they have a value
+            function toggleActiveClass(element) {
+                if (element.value && element.value !== 'all') {
+                    element.classList.add('filter-active');
+                } else {
+                    element.classList.remove('filter-active');
+                }
+            }
+            
+            // Initialize the active class for all filters
+            toggleActiveClass(dateFilter);
+            toggleActiveClass(statusFilter);
+            toggleActiveClass(methodFilter);
+            
+            // Function to apply all filters
+            function applyFilters() {
+                const dateValue = dateFilter.value;
+                const statusValue = statusFilter.value;
+                const methodValue = methodFilter.value;
+                const searchValue = searchInput.value.toLowerCase().trim();
+                
+                // Get all transaction rows
+                const rows = document.querySelectorAll('.data-table tbody tr');
+                
+                // Loop through rows and apply filters
+                rows.forEach(row => {
+                    // Get cell values for filtering
+                    const dateCell = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                    const statusCell = row.querySelector('.status-badge').textContent.toLowerCase();
+                    const methodCell = row.querySelector('td:nth-child(6)').textContent.toLowerCase();
+                    const txnId = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
+                    const studentName = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+                    const courseName = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
+                    
+                    // Check if row matches all filters
+                    const matchesDate = dateValue === 'all' || checkDateMatch(dateCell, dateValue);
+                    const matchesStatus = statusValue === 'all' || statusCell.includes(statusValue);
+                    const matchesMethod = methodValue === 'all' || methodCell.includes(methodValue.replace('credit', 'credit card').replace('debit', 'debit card'));
+                    const matchesSearch = !searchValue || 
+                                         txnId.includes(searchValue) || 
+                                         studentName.includes(searchValue) || 
+                                         courseName.includes(searchValue);
+                    
+                    // Show/hide row based on filter matches
+                    if (matchesDate && matchesStatus && matchesMethod && matchesSearch) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+                
+                // Update no results message if needed
+                updateResultsVisibility();
+            }
+            
+            // Helper function to check date matches based on filter
+            function checkDateMatch(dateString, filterValue) {
+                const today = new Date();
+                const date = new Date(dateString);
+                
+                switch (filterValue) {
+                    case 'today':
+                        return date.toDateString() === today.toDateString();
+                    case 'week': {
+                        const startOfWeek = new Date(today);
+                        startOfWeek.setDate(today.getDate() - today.getDay());
+                        return date >= startOfWeek;
+                    }
+                    case 'month': {
+                        return date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
+                    }
+                    default:
+                        return true;
+                }
+            }
+            
+            // Function to update results visibility
+            function updateResultsVisibility() {
+                const rows = document.querySelectorAll('.data-table tbody tr');
+                const visibleRows = Array.from(rows).filter(row => row.style.display !== 'none');
+                
+                // You could show/hide a "no results" message here
+                if (visibleRows.length === 0) {
+                    if (!document.getElementById('no-results')) {
+                        const table = document.querySelector('.data-table table');
+                        const noResults = document.createElement('div');
+                        noResults.id = 'no-results';
+                        noResults.style.padding = '20px';
+                        noResults.style.textAlign = 'center';
+                        noResults.style.color = '#6c757d';
+                        noResults.innerHTML = 'No transactions found matching your filters. <button id="reset-filters" style="background: none; border: none; color: #007bff; cursor: pointer;">Reset Filters</button>';
+                        
+                        table.parentNode.appendChild(noResults);
+                        
+                        document.getElementById('reset-filters').addEventListener('click', resetAllFilters);
+                    }
+                } else {
+                    const noResults = document.getElementById('no-results');
+                    if (noResults) {
+                        noResults.remove();
+                    }
+                }
+            }
+            
+            // Function to reset all filters
+            function resetAllFilters() {
+                dateFilter.value = 'all';
+                statusFilter.value = 'all';
+                methodFilter.value = 'all';
+                searchInput.value = '';
+                
+                // Remove active classes
+                dateFilter.classList.remove('filter-active');
+                statusFilter.classList.remove('filter-active');
+                methodFilter.classList.remove('filter-active');
+                
+                // Apply filters (show all rows)
+                applyFilters();
+            }
+            
+            // Tab functionality
+            const tabs = document.querySelectorAll('.tab');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Update status filter based on tab
+                    const tabId = this.getAttribute('data-tab');
+                    if (tabId !== 'all') {
+                        statusFilter.value = tabId;
+                        statusFilter.classList.add('filter-active');
+                    } else {
+                        statusFilter.value = 'all';
+                        statusFilter.classList.remove('filter-active');
+                    }
+                    
+                    // Apply filters
+                    applyFilters();
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Management - LMS Platform</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* Course Management specific styles */
+        .dashboard-container {
+            display: flex;
+            min-height: calc(100vh - 70px);
+        }
+        
+        .sidebar {
+            width: 250px;
+            background-color: #343a40;
+            color: white;
+            padding: 20px 0;
+            position: fixed;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+        
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-header h3 {
+            color: #007bff;
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-menu li a {
+            display: block;
+            padding: 10px 20px;
+            color: #adb5bd;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .sidebar-menu li a:hover, .sidebar-menu li a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left: 4px solid #007bff;
+        }
+        
+        .sidebar-menu li a.active {
+            color: white;
+            font-weight: 500;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            margin-left: 250px;
+            background-color: #f8f9fa;
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .page-header h2 {
+            margin-bottom: 10px;
+            color: #343a40;
+        }
+
+        .action-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-button:hover {
+            background-color: #0069d9;
+        }
+
+        .filter-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+        }
+
+        .filter-group label {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+
+        .filter-group select, .filter-group input {
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .search-container {
+            flex-grow: 1;
+            position: relative;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ced4da;
+            border-radius: 30px 0 0 30px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+            height: 42px;
+            border-right: none;
+        }
+        
+        .search-container input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+            background-color: white;
+        }
+        
+        .search-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            height: 42px;
+            padding: 0 20px;
+            border-radius: 0 30px 30px 0;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .search-button:hover {
+            background-color: #0069d9;
+        }
+        
+        .search-container input::placeholder {
+            color: #adb5bd;
+            transition: opacity 0.3s ease;
+        }
+        
+        .search-container input:focus::placeholder {
+            opacity: 0.5;
+        }
+
+        .tabs-container {
+            margin-bottom: 20px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 5px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            border-bottom-color: #007bff;
+            color: #007bff;
+        }
+
+        .tab:hover:not(.active) {
+            border-bottom-color: #dee2e6;
+        }
+
+        .data-table {
+            width: 100%;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .data-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th, .data-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .data-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .data-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
+        .status-pending {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+        
+        .status-inactive {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+
+        .status-draft {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+
+        .status-published {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .status-review {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .status-rejected {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .action-btn-view {
+            background-color: rgba(0, 123, 255, 0.1);
+            color: #007bff;
+        }
+        
+        .action-btn-edit {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+        
+        .action-btn-delete {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .action-btn-approve {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .action-btn-reject {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 70%;
+            max-width: 800px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            color: #343a40;
+            margin-bottom: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-group select {
+            height: 42px;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+            gap: 5px;
+        }
+
+        .pagination-item {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            background-color: white;
+            border: 1px solid #dee2e6;
+            cursor: pointer;
+            color: #007bff;
+        }
+
+        .pagination-item.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .pagination-item:hover:not(.active) {
+            background-color: #f8f9fa;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            background-color: rgba(0, 123, 255, 0.1);
+            color: #007bff;
+            margin-right: 5px;
+        }
+        
+        .filter-badge {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 8px 15px;
+            font-size: 13px;
+            border: 1px solid rgba(0, 123, 255, 0.3);
+        }
+
+        .filter-badge:hover {
+            background-color: rgba(0, 123, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-badge.active {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        /* Enhanced filter select styles */
+        .filter-group select {
+            padding: 10px 30px 10px 15px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 14px;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236c757d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-group select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: static;
+                height: auto;
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .filter-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .filter-group {
+                width: 100%;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .tabs {
+                overflow-x: auto;
+                padding-bottom: 5px;
+            }
+        }
+
+        /* Styling for category and status dropdowns */
+        .dropdown-select {
+          /* Basic appearance */
+          width: 100%;
+          padding: 10px 15px;
+          font-size: 14px;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          background-color: white;
+          color: #333;
+          
+          /* Custom dropdown arrow */
+          appearance: none;
+          background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+          background-repeat: no-repeat;
+          background-position: right 10px center;
+          background-size: 16px;
+          
+          /* Spacing */
+          margin-bottom: 15px;
+          
+          /* Transitions for hover effects */
+          transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        /* Hover state */
+        .dropdown-select:hover {
+          border-color: #aaa;
+        }
+
+        /* Focus state */
+        .dropdown-select:focus {
+          outline: none;
+          border-color: #4a90e2;
+          box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+        }
+
+        /* Disabled state */
+        .dropdown-select:disabled {
+          background-color: #f5f5f5;
+          cursor: not-allowed;
+          opacity: 0.7;
+        }
+
+        /* Option styling */
+        .dropdown-select option {
+          padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1><a href="../index.html">LMS Platform</a></h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="courses.html" class="active">Courses</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3>Admin Portal</h3>
+                <p>Welcome back, LBC!</p>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="dashboard.html">📊 Dashboard</a></li>
+                <li><a href="users.html">👥 User Management</a></li>
+                <li><a href="courses.html" class="active">📚 Course Management</a></li>
+                <li><a href="support-helpdesk.html">🎧 Support Help Desk</a></li>
+                <li><a href="payments.html">💰 Payment Management</a></li>
+                <li><a href="../shared/login.html">🚪 Logout</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <h2>Course Management</h2>
+                <button class="action-button">+ Add New Course</button>
+            </div>
+
+            <div class="filter-container">
+                <div class="filter-group">
+                    <label for="category-filter">Category</label>
+                    <select id="category-filter" class="dropdown-select">
+                        <option value="all">All Categories</option>
+                        <option value="programming">Programming</option>
+                        <option value="cybersecurity">Cybersecurity</option>
+                        <option value="web development">Web Development</option>
+                        <option value="operating systems">Operating Systems</option>
+                        <option value="iot">IoT</option>
+                        <option value="design">Design</option>
+                        <option value="business">Business</option>
+                        <option value="development">Development</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="status-filter">Status</label>
+                    <select id="status-filter" class="dropdown-select">
+                        <option value="all">All Status</option>
+                        <option value="published">Published</option>
+                        <option value="draft">Draft</option>
+                        <option value="under review">Under Review</option>
+                    </select>
+                </div>
+                <div class="search-container">
+                    <label for="search-input">Search</label>
+                    <div class="search-input-wrapper">
+                        <input type="text" id="search-input" placeholder="Search courses...">
+                        <button class="search-button" onclick="applyFilters()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Category Filters -->
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
+                <span class="category-badge filter-badge active" onclick="quickFilterByCategory('all')">All Categories</span>
+                <span class="category-badge filter-badge" onclick="quickFilterByCategory('programming')">Programming</span>
+                <span class="category-badge filter-badge" onclick="quickFilterByCategory('cybersecurity')">Cybersecurity</span>
+                <span class="category-badge filter-badge" onclick="quickFilterByCategory('web development')">Web Development</span>
+                <span class="category-badge filter-badge" onclick="quickFilterByCategory('operating systems')">Operating Systems</span>
+                <span class="category-badge filter-badge" onclick="quickFilterByCategory('iot')">IoT</span>
+                <span class="category-badge filter-badge" onclick="quickFilterByCategory('design')">Design</span>
+                <span class="category-badge filter-badge" onclick="quickFilterByCategory('business')">Business</span>
+                <span class="category-badge filter-badge" onclick="quickFilterByCategory('development')">Development</span>
+            </div>
+
+            <div class="tabs-container">
+                <div class="tabs">
+                    <div class="tab active">All Courses</div>
+                    <div class="tab">Published</div>
+                    <div class="tab">Draft</div>
+                    <div class="tab">Under Review</div>
+                </div>
+            </div>
+
+            <!-- Course Cards Container -->
+            <div class="course-cards-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                
+                <!-- Python Course Card -->
+                <div class="course-card" style="background-color: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                    <div class="course-image" style="height: 180px; background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTeDknLu61xwhUz1vIoy0KXbZwyZbBl8ZJAww&s'); background-size: cover; background-position: center; position: relative;">
+                        <div id="python-play-button" class="play-button" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 123, 255, 0.8); width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer;">
+                            <span style="color: white; font-size: 24px;">▶</span>
+                        </div>
+                    </div>
+                    <div class="course-content" style="padding: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span class="category-badge">Programming</span>
+                            <span class="status-badge status-published">Published</span>
+                        </div>
+                        <h3 style="margin: 0 0 10px 0; color: #343a40;">Python Programming</h3>
+                        <p style="color: #6c757d; margin-bottom: 15px; font-size: 14px;">Learn Python from basics to advanced concepts with practical examples and projects.</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <span style="font-size: 14px; color: #495057;"><strong>Instructor:</strong> John Doe</span>
+                            <span style="font-size: 14px; color: #495057;"><strong>Students:</strong> 1,245</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn action-btn-view">View</button>
+                            <button class="action-btn action-btn-edit">Edit</button>
+                            <button class="action-btn action-btn-delete">Delete</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Web Development Course Card -->
+                <div class="course-card" style="background-color: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                    <div class="course-image" style="height: 180px; background-image: url('https://qph.cf2.quoracdn.net/main-qimg-74192a0cbec87fd05abd588657e83a13'); background-size: cover; background-position: center; position: relative;">
+                        <div id="webdev-play-button" class="play-button" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 123, 255, 0.8); width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer;">
+                            <span style="color: white; font-size: 24px;">▶</span>
+                        </div>
+                    </div>
+                    <div class="course-content" style="padding: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span class="category-badge">Web Development</span>
+                            <span class="status-badge status-published">Published</span>
+                        </div>
+                        <h3 style="margin: 0 0 10px 0; color: #343a40;">Web Development</h3>
+                        <p style="color: #6c757d; margin-bottom: 15px; font-size: 14px;">Master HTML, CSS, JavaScript and modern frameworks to build responsive websites.</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <span style="font-size: 14px; color: #495057;"><strong>Instructor:</strong> Jane Smith</span>
+                            <span style="font-size: 14px; color: #495057;"><strong>Students:</strong> 987</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn action-btn-view">View</button>
+                            <button class="action-btn action-btn-edit">Edit</button>
+                            <button class="action-btn action-btn-delete">Delete</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- cyber security Course Card -->
+                <div class="course-card" style="background-color: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                    <div class="course-image" style="height: 180px; background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMm9n9ZES0DYBMnhXc_zwulxw-BcKVk1seqq-VQ39yEXp2jD0knJLeDgHzrBpghuAPS9s&usqp=CAU'); background-size: cover; background-position: center; position: relative;">
+                        <div id="ethical-hacking-play-button" class="play-button" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 123, 255, 0.8); width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer;">
+                            <span style="color: white; font-size: 24px;">▶</span>
+                        </div>
+                    </div>
+                    <div class="course-content" style="padding: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span class="category-badge">Cybersecurity</span>
+                            <span class="status-badge status-review">Under Review</span>
+                        </div>
+                        <h3 style="margin: 0 0 10px 0; color: #343a40;">Cyber Security</h3>
+                        <p style="color: #6c757d; margin-bottom: 15px; font-size: 14px;">Learn penetration testing, vulnerability assessment and ethical hacking techniques.</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <span style="font-size: 14px; color: #495057;"><strong>Instructor:</strong> Mike Johnson</span>
+                            <span style="font-size: 14px; color: #495057;"><strong>Students:</strong> 756</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn action-btn-view">View</button>
+                            <button class="action-btn action-btn-edit">Edit</button>
+                            <button class="action-btn action-btn-approve">Approve</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Java Programming Course Card -->
+                <div class="course-card" style="background-color: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                    <div class="course-image" style="height: 180px; background-image: url('https://www.dremendo.com/java-programming-tutorial/images/java-tutorial-share-large.png?nocache=786123'); background-size: cover; background-position: center; position: relative;">
+                        <div id="java-play-button" class="play-button" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 123, 255, 0.8); width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer;">
+                            <span style="color: white; font-size: 24px;">▶</span>
+                        </div>
+                    </div>
+                    <div class="course-content" style="padding: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span class="category-badge">Programming</span>
+                            <span class="status-badge status-published">Published</span>
+                        </div>
+                        <h3 style="margin: 0 0 10px 0; color: #343a40;">Java Programming</h3>
+                        <p style="color: #6c757d; margin-bottom: 15px; font-size: 14px;">Comprehensive Java course covering core concepts, OOP, and enterprise applications.</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <span style="font-size: 14px; color: #495057;"><strong>Instructor:</strong> Sarah Williams</span>
+                            <span style="font-size: 14px; color: #495057;"><strong>Students:</strong> 892</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn action-btn-view">View</button>
+                            <button class="action-btn action-btn-edit">Edit</button>
+                            <button class="action-btn action-btn-delete">Delete</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Linux Course Card -->
+                <div class="course-card" style="background-color: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                    <div class="course-image" style="height: 180px; background-image: url('https://miro.medium.com/v2/resize:fill:320:214/0*z6dVjQ11UsEDMwJn.jpeg'); background-size: cover; background-position: center; position: relative;">
+                        <div id="linux-play-button" class="play-button" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 123, 255, 0.8); width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer;">
+                            <span style="color: white; font-size: 24px;">▶</span>
+                        </div>
+                    </div>
+                    <div class="course-content" style="padding: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span class="category-badge">Operating Systems</span>
+                            <span class="status-badge status-draft">Draft</span>
+                        </div>
+                        <h3 style="margin: 0 0 10px 0; color: #343a40;">Linux Administration</h3>
+                        <p style="color: #6c757d; margin-bottom: 15px; font-size: 14px;">Master Linux system administration, shell scripting, and server management.</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <span style="font-size: 14px; color: #495057;"><strong>Instructor:</strong> Robert Chen</span>
+                            <span style="font-size: 14px; color: #495057;"><strong>Students:</strong> 0</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn action-btn-view">View</button>
+                            <button class="action-btn action-btn-edit">Edit</button>
+                            <button class="action-btn action-btn-delete">Delete</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- IoT Fundamentals Course Card -->
+                <div class="course-card" style="background-color: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                    <div class="course-image" style="height: 180px; background-image: url('https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcR4I1wUAJkKstt69h5IixW64rVnYOOLII2sVTHUPkriDF_jvvBF'); background-size: cover; background-position: center; position: relative;">
+                        <div id="iot-play-button" class="play-button" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 123, 255, 0.8); width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer;">
+                            <span style="color: white; font-size: 24px;">▶</span>
+                        </div>
+                    </div>
+                    <div class="course-content" style="padding: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span class="category-badge">IoT</span>
+                            <span class="status-badge status-published">Published</span>
+                        </div>
+                        <h3 style="margin: 0 0 10px 0; color: #343a40;">IoT Fundamentals</h3>
+                        <p style="color: #6c757d; margin-bottom: 15px; font-size: 14px;">Introduction to Internet of Things concepts, architectures, and practical applications.</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <span style="font-size: 14px; color: #495057;"><strong>Instructor:</strong> Emily Davis</span>
+                            <span style="font-size: 14px; color: #495057;"><strong>Students:</strong> 543</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn action-btn-view">View</button>
+                            <button class="action-btn action-btn-edit">Edit</button>
+                            <button class="action-btn action-btn-delete">Delete</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Business Strategy Fundamentals Course Card -->
+                <div class="course-card" style="background-color: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                    <div class="course-image" style="height: 180px; background-image: url('../assets/images/bps.jpeg'); background-size: cover; background-position: center; position: relative;">
+                        <div id="business-play-button" class="play-button" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 123, 255, 0.8); width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer;">
+                            <span style="color: white; font-size: 24px;">▶</span>
+                        </div>
+                    </div>
+                    <div class="course-content" style="padding: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span class="category-badge">Business</span>
+                            <span class="status-badge status-published">Published</span>
+                        </div>
+                        <h3 style="margin: 0 0 10px 0; color: #343a40;">Business Strategy Fundamentals</h3>
+                        <p style="color: #6c757d; margin-bottom: 15px; font-size: 14px;">Learn essential business strategy concepts, frameworks, and implementation techniques.</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <span style="font-size: 14px; color: #495057;"><strong>Instructor:</strong> Sarah Johnson</span>
+                            <span style="font-size: 14px; color: #495057;"><strong>Students:</strong> 850</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn action-btn-view">View</button>
+                            <button class="action-btn action-btn-edit">Edit</button>
+                            <button class="action-btn action-btn-delete">Delete</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- UI/UX Design Masterclass Course Card -->
+                <div class="course-card" style="background-color: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                    <div class="course-image" style="height: 180px; background-image: url('../assets/images/uiux.jpeg'); background-size: cover; background-position: center; position: relative;">
+                        <div id="uiux-play-button" class="play-button" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 123, 255, 0.8); width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer;">
+                            <span style="color: white; font-size: 24px;">▶</span>
+                        </div>
+                    </div>
+                    <div class="course-content" style="padding: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span class="category-badge">Design</span>
+                            <span class="status-badge status-published">Published</span>
+                        </div>
+                        <h3 style="margin: 0 0 10px 0; color: #343a40;">UI/UX Design Masterclass</h3>
+                        <p style="color: #6c757d; margin-bottom: 15px; font-size: 14px;">Master user interface and experience design principles, tools, and methodologies.</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <span style="font-size: 14px; color: #495057;"><strong>Instructor:</strong> Michael Chen</span>
+                            <span style="font-size: 14px; color: #495057;"><strong>Students:</strong> 1,500</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn action-btn-view">View</button>
+                            <button class="action-btn action-btn-edit">Edit</button>
+                            <button class="action-btn action-btn-delete">Delete</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Machine Learning Course Card -->
+                <div class="course-card" style="background-color: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                    <div class="course-image" style="height: 180px; background-image: url('../assets/images/aiml.jpeg'); background-size: cover; background-position: center; position: relative;">
+                        <div id="datascience-play-button" class="play-button" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 123, 255, 0.8); width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer;">
+                            <span style="color: white; font-size: 24px;">▶</span>
+                        </div>
+                    </div>
+                    <div class="course-content" style="padding: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span class="category-badge">Development</span>
+                            <span class="status-badge status-published">Published</span>
+                        </div>
+                        <h3 style="margin: 0 0 10px 0; color: #343a40;">Machine Learning</h3>
+                        <p style="color: #6c757d; margin-bottom: 15px; font-size: 14px;">Comprehensive course on data analysis, machine learning algorithms, and AI applications.</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <span style="font-size: 14px; color: #495057;"><strong>Instructor:</strong> David Kim</span>
+                            <span style="font-size: 14px; color: #495057;"><strong>Students:</strong> 1,350</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn action-btn-view">View</button>
+                            <button class="action-btn action-btn-edit">Edit</button>
+                            <button class="action-btn action-btn-delete">Delete</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Operating Systems Course Card -->
+                <div class="course-card" style="background-color: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                    <div class="course-image" style="height: 180px; background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSR0wljURm97SMMr0FNZfTocWo0K1Ca-V-TDw&s'); background-size: cover; background-position: center; position: relative;">
+                        <div id="os-play-button" class="play-button" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 123, 255, 0.8); width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer;">
+                            <span style="color: white; font-size: 24px;">▶</span>
+                        </div>
+                    </div>
+                    <div class="course-content" style="padding: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span class="category-badge">Operating Systems</span>
+                            <span class="status-badge status-published">Published</span>
+                        </div>
+                        <h3 style="margin: 0 0 10px 0; color: #343a40;">Advanced Operating Systems</h3>
+                        <p style="color: #6c757d; margin-bottom: 15px; font-size: 14px;">Deep dive into operating system architecture, memory management, and process scheduling.</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <span style="font-size: 14px; color: #495057;"><strong>Instructor:</strong> Dr. Alan Foster</span>
+                            <span style="font-size: 14px; color: #495057;"><strong>Students:</strong> 876</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn action-btn-view">View</button>
+                            <button class="action-btn action-btn-edit">Edit</button>
+                            <button class="action-btn action-btn-delete">Delete</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cloud Computing Course Card -->
+                <div class="course-card" style="background-color: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                    <div class="course-image" style="height: 180px; background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWCjt_MHzLMlO51iBkmvL0yeN4z3m2yYOuRw&s'); background-size: cover; background-position: center; position: relative;">
+                        <div id="cloud-play-button" class="play-button" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 123, 255, 0.8); width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer;">
+                            <span style="color: white; font-size: 24px;">▶</span>
+                        </div>
+                    </div>
+                    <div class="course-content" style="padding: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span class="category-badge">Development</span>
+                            <span class="status-badge status-published">Published</span>
+                        </div>
+                        <h3 style="margin: 0 0 10px 0; color: #343a40;">Cloud Computing and DevOps</h3>
+                        <p style="color: #6c757d; margin-bottom: 15px; font-size: 14px;">Learn cloud platforms, virtualization, containerization, and continuous integration practices.</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <span style="font-size: 14px; color: #495057;"><strong>Instructor:</strong> Maria Garcia</span>
+                            <span style="font-size: 14px; color: #495057;"><strong>Students:</strong> 1,125</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn action-btn-view">View</button>
+                            <button class="action-btn action-btn-edit">Edit</button>
+                            <button class="action-btn action-btn-delete">Delete</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Artificial Intelligence Course Card -->
+                <div class="course-card" style="background-color: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                    <div class="course-image" style="height: 180px; background-image: url('../assets/images/ai.jpg'); background-size: cover; background-position: center; position: relative;">
+                        <div id="ai-play-button" class="play-button" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 123, 255, 0.8); width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer;">
+                            <span style="color: white; font-size: 24px;">▶</span>
+                        </div>
+                    </div>
+                    <div class="course-content" style="padding: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span class="category-badge">Development</span>
+                            <span class="status-badge status-published">Published</span>
+                        </div>
+                        <h3 style="margin: 0 0 10px 0; color: #343a40;">Artificial Intelligence Fundamentals</h3>
+                        <p style="color: #6c757d; margin-bottom: 15px; font-size: 14px;">Learn AI concepts, neural networks, and practical applications of artificial intelligence.</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <span style="font-size: 14px; color: #495057;"><strong>Instructor:</strong> Emily Watson</span>
+                            <span style="font-size: 14px; color: #495057;"><strong>Students:</strong> 1,850</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn action-btn-view">View</button>
+                            <button class="action-btn action-btn-edit">Edit</button>
+                            <button class="action-btn action-btn-delete">Delete</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile App Development Course Card -->
+                <div class="course-card" style="background-color: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                    <div class="course-image" style="height: 180px; background-image: url('../assets/images/mad.jpg'); background-size: cover; background-position: center; position: relative;">
+                        <div id="mobile-play-button" class="play-button" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 123, 255, 0.8); width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer;">
+                            <span style="color: white; font-size: 24px;">▶</span>
+                        </div>
+                    </div>
+                    <div class="course-content" style="padding: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span class="category-badge">Development</span>
+                            <span class="status-badge status-published">Published</span>
+                        </div>
+                        <h3 style="margin: 0 0 10px 0; color: #343a40;">Mobile App Development</h3>
+                        <p style="color: #6c757d; margin-bottom: 15px; font-size: 14px;">Master mobile app development for iOS and Android platforms using modern frameworks.</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <span style="font-size: 14px; color: #495057;"><strong>Instructor:</strong> Ryan Cooper</span>
+                            <span style="font-size: 14px; color: #495057;"><strong>Students:</strong> 1,720</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn action-btn-view">View</button>
+                            <button class="action-btn action-btn-edit">Edit</button>
+                            <button class="action-btn action-btn-delete">Delete</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MERN Stack Course Card -->
+                <div class="course-card" style="background-color: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                    <div class="course-image" style="height: 180px; background-image: url('https://i.ytimg.com/vi/I4xzTMmG-pU/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLB1uEc9c36FT0tpJ8rUDeE0HJ5zEw'); background-size: cover; background-position: center; position: relative;">
+                        <div id="mern-play-button" class="play-button" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 123, 255, 0.8); width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer;">
+                            <span style="color: white; font-size: 24px;">▶</span>
+                        </div>
+                    </div>
+                    <div class="course-content" style="padding: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span class="category-badge">Web Development</span>
+                            <span class="status-badge status-published">Published</span>
+                        </div>
+                        <h3 style="margin: 0 0 10px 0; color: #343a40;">MERN Stack Development</h3>
+                        <p style="color: #6c757d; margin-bottom: 15px; font-size: 14px;">Master MongoDB, Express, React, and Node.js to build full-stack JavaScript applications.</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <span style="font-size: 14px; color: #495057;"><strong>Instructor:</strong> Jason Lee</span>
+                            <span style="font-size: 14px; color: #495057;"><strong>Students:</strong> 1,642</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn action-btn-view">View</button>
+                            <button class="action-btn action-btn-edit">Edit</button>
+                            <button class="action-btn action-btn-delete">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- No Courses Found Message -->
+            <div id="no-courses-message" style="display: none; text-align: center; padding: 50px; background-color: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); margin-bottom: 30px;">
+                <img src="https://cdn-icons-png.flaticon.com/512/6134/6134065.png" alt="No courses found" style="width: 150px; margin-bottom: 20px; opacity: 0.5;">
+                <h3 style="color: #6c757d; margin-bottom: 10px;">No Courses Found</h3>
+                <p style="color: #adb5bd;">We couldn't find any courses matching your search criteria.</p>
+                <button class="btn btn-primary" style="margin-top: 20px;" onclick="resetFilters()">Reset Filters</button>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Add YouTube Video Modal for Python Course -->
+    <div id="pythonVideoModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); overflow: auto;">
+        <span style="position: absolute; top: 20px; right: 30px; color: white; font-size: 30px; font-weight: bold; cursor: pointer;" onclick="document.getElementById('pythonVideoModal').style.display='none'; document.getElementById('pythonVideoIframe').src = '';">&times;</span>
+        <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+            <iframe id="pythonVideoIframe" width="80%" height="80%" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- Add YouTube Video Modal for Web Development Course -->
+    <div id="webdevVideoModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); overflow: auto;">
+        <span style="position: absolute; top: 20px; right: 30px; color: white; font-size: 30px; font-weight: bold; cursor: pointer;" onclick="document.getElementById('webdevVideoModal').style.display='none'; document.getElementById('webdevVideoIframe').src = '';">&times;</span>
+        <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+            <iframe id="webdevVideoIframe" width="80%" height="80%" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- Add YouTube Video Modal for Ethical Hacking Course -->
+    <div id="ethicalHackingVideoModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); overflow: auto;">
+        <span style="position: absolute; top: 20px; right: 30px; color: white; font-size: 30px; font-weight: bold; cursor: pointer;" onclick="document.getElementById('ethicalHackingVideoModal').style.display='none'; document.getElementById('ethicalHackingVideoIframe').src = '';">&times;</span>
+        <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+            <iframe id="ethicalHackingVideoIframe" width="80%" height="80%" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- Add YouTube Video Modal for Java Programming Course -->
+    <div id="javaVideoModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); overflow: auto;">
+        <span style="position: absolute; top: 20px; right: 30px; color: white; font-size: 30px; font-weight: bold; cursor: pointer;" onclick="document.getElementById('javaVideoModal').style.display='none'; document.getElementById('javaVideoIframe').src = '';">&times;</span>
+        <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+            <iframe id="javaVideoIframe" width="80%" height="80%" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- Add YouTube Video Modal for Linux Administration Course -->
+    <div id="linuxVideoModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); overflow: auto;">
+        <span style="position: absolute; top: 20px; right: 30px; color: white; font-size: 30px; font-weight: bold; cursor: pointer;" onclick="document.getElementById('linuxVideoModal').style.display='none'; document.getElementById('linuxVideoIframe').src = '';">&times;</span>
+        <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+            <iframe id="linuxVideoIframe" width="80%" height="80%" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- Add YouTube Video Modal for IoT Fundamentals Course -->
+    <div id="iotVideoModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); overflow: auto;">
+        <span style="position: absolute; top: 20px; right: 30px; color: white; font-size: 30px; font-weight: bold; cursor: pointer;" onclick="document.getElementById('iotVideoModal').style.display='none'; document.getElementById('iotVideoIframe').src = '';">&times;</span>
+        <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+            <iframe id="iotVideoIframe" width="80%" height="80%" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- Add YouTube Video Modal for UI/UX Design Masterclass Course -->
+    <div id="uiuxVideoModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); overflow: auto;">
+        <span style="position: absolute; top: 20px; right: 30px; color: white; font-size: 30px; font-weight: bold; cursor: pointer;" onclick="document.getElementById('uiuxVideoModal').style.display='none'; document.getElementById('uiuxVideoIframe').src = '';">&times;</span>
+        <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+            <iframe id="uiuxVideoIframe" width="80%" height="80%" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- Add YouTube Video Modal for Data Science and Machine Learning Course -->
+    <div id="datascienceVideoModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); overflow: auto;">
+        <span style="position: absolute; top: 20px; right: 30px; color: white; font-size: 30px; font-weight: bold; cursor: pointer;" onclick="document.getElementById('datascienceVideoModal').style.display='none'; document.getElementById('datascienceVideoIframe').src = '';">&times;</span>
+        <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+            <iframe id="datascienceVideoIframe" width="80%" height="80%" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- Add YouTube Video Modal for Operating Systems Course -->
+    <div id="osVideoModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); overflow: auto;">
+        <span style="position: absolute; top: 20px; right: 30px; color: white; font-size: 30px; font-weight: bold; cursor: pointer;" onclick="document.getElementById('osVideoModal').style.display='none'; document.getElementById('osVideoIframe').src = '';">&times;</span>
+        <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+            <iframe id="osVideoIframe" width="80%" height="80%" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- Add YouTube Video Modal for Cloud Computing Course -->
+    <div id="cloudVideoModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); overflow: auto;">
+        <span style="position: absolute; top: 20px; right: 30px; color: white; font-size: 30px; font-weight: bold; cursor: pointer;" onclick="document.getElementById('cloudVideoModal').style.display='none'; document.getElementById('cloudVideoIframe').src = '';">&times;</span>
+        <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+            <iframe id="cloudVideoIframe" width="80%" height="80%" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- Add YouTube Video Modal for MERN Stack Course -->
+    <div id="mernVideoModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); overflow: auto;">
+        <span style="position: absolute; top: 20px; right: 30px; color: white; font-size: 30px; font-weight: bold; cursor: pointer;" onclick="document.getElementById('mernVideoModal').style.display='none'; document.getElementById('mernVideoIframe').src = '';">&times;</span>
+        <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+            <iframe id="mernVideoIframe" width="80%" height="80%" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- Add YouTube Video Modal for Artificial Intelligence Course -->
+    <div id="aiVideoModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); overflow: auto;">
+        <span style="position: absolute; top: 20px; right: 30px; color: white; font-size: 30px; font-weight: bold; cursor: pointer;" onclick="document.getElementById('aiVideoModal').style.display='none'; document.getElementById('aiVideoIframe').src = '';">&times;</span>
+        <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+            <iframe id="aiVideoIframe" width="80%" height="80%" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- Add YouTube Video Modal for Mobile App Development Course -->
+    <div id="mobileVideoModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); overflow: auto;">
+        <span style="position: absolute; top: 20px; right: 30px; color: white; font-size: 30px; font-weight: bold; cursor: pointer;" onclick="document.getElementById('mobileVideoModal').style.display='none'; document.getElementById('mobileVideoIframe').src = '';">&times;</span>
+        <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+            <iframe id="mobileVideoIframe" width="80%" height="80%" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript for course management functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching functionality
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Get tab text and filter courses based on status
+                    const tabText = this.textContent.trim();
+                    if (tabText === 'All Courses') {
+                        statusFilter.value = 'all';
+                    } else if (tabText === 'Published') {
+                        statusFilter.value = 'published';
+                    } else if (tabText === 'Draft') {
+                        statusFilter.value = 'draft';
+                    } else if (tabText === 'Under Review') {
+                        statusFilter.value = 'under review';
+                    }
+                    
+                    // Apply filters after changing the status filter value
+                    applyFilters();
+                });
+            });
+
+            // Filter functionality
+            const categoryFilter = document.getElementById('category-filter');
+            const statusFilter = document.getElementById('status-filter');
+            const searchInput = document.getElementById('search-input');
+
+            function applyFilters() {
+                const selectedCategory = categoryFilter.value;
+                const selectedStatus = statusFilter.value;
+                const searchTerm = searchInput.value.toLowerCase();
+                
+                const courseCards = document.querySelectorAll('.course-card');
+                let visibleCoursesCount = 0;
+                
+                courseCards.forEach(card => {
+                    const categoryBadge = card.querySelector('.category-badge');
+                    const statusBadge = card.querySelector('.status-badge');
+                    const courseTitle = card.querySelector('h3').textContent.toLowerCase();
+                    const courseDescription = card.querySelector('p').textContent.toLowerCase();
+                    
+                    let categoryMatch = true;
+                    let statusMatch = true;
+                    let searchMatch = true;
+                    
+                    // Category filter
+                    if (selectedCategory !== 'all') {
+                        categoryMatch = categoryBadge.textContent.toLowerCase() === selectedCategory.toLowerCase();
+                    }
+                    
+                    // Status filter
+                    if (selectedStatus !== 'all') {
+                        const statusText = statusBadge.textContent.toLowerCase();
+                        statusMatch = statusText === selectedStatus.toLowerCase();
+                    }
+                    
+                    // Search term filter
+                    if (searchTerm !== '') {
+                        searchMatch = courseTitle.includes(searchTerm) || courseDescription.includes(searchTerm);
+                    }
+                    
+                    // Show or hide based on all filters
+                    if (categoryMatch && statusMatch && searchMatch) {
+                        card.style.display = 'block';
+                        visibleCoursesCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                // Show "No courses found" message if no courses are visible
+                const noCoursesMessage = document.getElementById('no-courses-message');
+                if (visibleCoursesCount === 0) {
+                    noCoursesMessage.style.display = 'block';
+                    document.querySelector('.course-cards-container').style.display = 'none';
+                } else {
+                    noCoursesMessage.style.display = 'none';
+                    document.querySelector('.course-cards-container').style.display = 'grid';
+                }
+                
+                console.log(`Category: ${selectedCategory}, Status: ${selectedStatus}, Search: ${searchTerm}, Visible courses: ${visibleCoursesCount}`);
+            }
+
+            // Function to reset all filters
+            function resetFilters() {
+                categoryFilter.value = 'all';
+                statusFilter.value = 'all';
+                searchInput.value = '';
+                
+                // Reset active state on filter badges
+                const filterBadges = document.querySelectorAll('.filter-badge');
+                filterBadges.forEach(badge => {
+                    if (badge.textContent.toLowerCase() === 'all categories') {
+                        badge.classList.add('active');
+                    } else {
+                        badge.classList.remove('active');
+                    }
+                });
+                
+                // Apply the reset filters
+                applyFilters();
+            }
+            
+            // Make the resetFilters function globally accessible
+            window.resetFilters = resetFilters;
+
+            categoryFilter.addEventListener('change', applyFilters);
+            statusFilter.addEventListener('change', applyFilters);
+            searchInput.addEventListener('input', applyFilters);
+            
+            // Add search on Enter key press
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    applyFilters();
+                }
+            });
+
+            // Add New Course button functionality
+            const addButton = document.querySelector('.action-button');
+            addButton.addEventListener('click', function() {
+                // Show the course modal
+                document.getElementById('course-modal').style.display = 'block';
+                document.getElementById('modal-title').textContent = 'Add New Course';
+                document.getElementById('course-form').reset();
+            });
+
+            // Handle modal close
+            const closeModal = document.querySelector('.close-modal');
+            const cancelBtn = document.getElementById('cancel-btn');
+            const courseModal = document.getElementById('course-modal');
+
+            // Close modal when X is clicked
+            closeModal.addEventListener('click', function() {
+                courseModal.style.display = 'none';
+            });
+
+            // Close modal when Cancel button is clicked
+            cancelBtn.addEventListener('click', function() {
+                courseModal.style.display = 'none';
+            });
+
+            // Close modal when clicking outside of it
+            window.addEventListener('click', function(event) {
+                if (event.target === courseModal) {
+                    courseModal.style.display = 'none';
+                }
+            });
+
+            // Handle form submission
+            const courseForm = document.getElementById('course-form');
+            courseForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                // Get the course name
+                const courseName = document.getElementById('course-name').value;
+                
+                // Here you would save the course data
+                console.log(`New course added: ${courseName}`);
+                
+                // Close the modal
+                courseModal.style.display = 'none';
+                
+                // You could add code here to update the dashboard with the new course
+                alert(`Course "${courseName}" has been added successfully!`);
+            });
+
+            // Quick filter by category function
+            function quickFilterByCategory(category) {
+                // Set the dropdown value
+                categoryFilter.value = category;
+                
+                // Apply the filter
+                applyFilters();
+                
+                // Highlight the active filter badge
+                const filterBadges = document.querySelectorAll('.filter-badge');
+                filterBadges.forEach(badge => {
+                    const badgeCategory = badge.textContent.toLowerCase();
+                    if ((category === 'all' && badgeCategory === 'all categories') || 
+                        (category !== 'all' && badgeCategory === category)) {
+                        badge.classList.add('active');
+                    } else {
+                        badge.classList.remove('active');
+                    }
+                });
+                
+                console.log(`Quick filter applied: ${category}`);
+            }
+            
+            // Make the quickFilterByCategory function globally accessible
+            window.quickFilterByCategory = quickFilterByCategory;
+
+            // Action buttons functionality
+            const actionButtons = document.querySelectorAll('.action-btn');
+            actionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const action = this.textContent;
+                    const courseCard = this.closest('.course-card');
+                    const courseTitle = courseCard.querySelector('h3').textContent;
+                    console.log(`${action} clicked for ${courseTitle}`);
+                });
+            });
+
+            // Play buttons functionality
+            const playButtons = document.querySelectorAll('.play-button');
+            playButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const courseCard = this.closest('.course-card');
+                    const courseTitle = courseCard.querySelector('h3').textContent;
+                    
+                    // Special handling for Python course
+                    if (this.id === 'python-play-button') {
+                        const modal = document.getElementById('pythonVideoModal');
+                        const iframe = document.getElementById('pythonVideoIframe');
+                        // Set the src with autoplay parameter
+                        iframe.src = "https://www.youtube.com/embed/UrsmFxEIp5k?si=oWqap3bdOkHxrK9U&autoplay=1";
+                        modal.style.display = 'block';
+                    } else if (this.id === 'webdev-play-button') {
+                        const modal = document.getElementById('webdevVideoModal');
+                        const iframe = document.getElementById('webdevVideoIframe');
+                        // Set the src with autoplay parameter
+                        iframe.src = "https://www.youtube.com/embed/ZxKM3DCV2kE?si=3lNFlZ9yfwrZHe60&autoplay=1";
+                        modal.style.display = 'block';
+                    } else if (this.id === 'ethical-hacking-play-button') {
+                        const modal = document.getElementById('ethicalHackingVideoModal');
+                        const iframe = document.getElementById('ethicalHackingVideoIframe');
+                        // Set the src with autoplay parameter
+                        iframe.src = "https://www.youtube.com/embed/QaXZJO1WlRA?si=aO9Wg5BtfrMnvIxx&autoplay=1";
+                        modal.style.display = 'block';
+                    } else if (this.id === 'java-play-button') {
+                        const modal = document.getElementById('javaVideoModal');
+                        const iframe = document.getElementById('javaVideoIframe');
+                        // Set the src with autoplay parameter
+                        iframe.src = "https://www.youtube.com/embed/32DLasxoOiM?si=FqyVuHN2ctjTD2Mg&autoplay=1";
+                        modal.style.display = 'block';
+                    } else if (this.id === 'linux-play-button') {
+                        const modal = document.getElementById('linuxVideoModal');
+                        const iframe = document.getElementById('linuxVideoIframe');
+                        // Set the src with autoplay parameter
+                        iframe.src = "https://www.youtube.com/embed/sWbUDq4S6Y8?si=g7Yc2hgwuG7KtryL&autoplay=1";
+                        modal.style.display = 'block';
+                    } else if (this.id === 'iot-play-button') {
+                        const modal = document.getElementById('iotVideoModal');
+                        const iframe = document.getElementById('iotVideoIframe');
+                        // Set the src with autoplay parameter
+                        iframe.src = "https://www.youtube.com/embed/h0gWfVCSGQQ?si=LDDSIZo8MI4_rpTd&autoplay=1";
+                        modal.style.display = 'block';
+                    } else if (this.id === 'uiux-play-button') {
+                        const modal = document.getElementById('uiuxVideoModal');
+                        const iframe = document.getElementById('uiuxVideoIframe');
+                        // Set the src with autoplay parameter
+                        iframe.src = "https://www.youtube.com/embed/c9Wg6Cb_YlU?si=f5ODJS-HsCDeVuYm&autoplay=1";
+                        modal.style.display = 'block';
+                    } else if (this.id === 'datascience-play-button') {
+                        const modal = document.getElementById('datascienceVideoModal');
+                        const iframe = document.getElementById('datascienceVideoIframe');
+                        // Set the src with autoplay parameter
+                        iframe.src = "https://www.youtube.com/embed/i_LwzRVP7bg?si=bmMQ7x2WXokmMUTj&autoplay=1";
+                        modal.style.display = 'block';
+                    } else if (this.id === 'os-play-button') {
+                        const modal = document.getElementById('osVideoModal');
+                        const iframe = document.getElementById('osVideoIframe');
+                        // Set the src with autoplay parameter
+                        iframe.src = "https://www.youtube.com/embed/26QPDBe-NB8?autoplay=1";
+                        modal.style.display = 'block';
+                    } else if (this.id === 'cloud-play-button') {
+                        const modal = document.getElementById('cloudVideoModal');
+                        const iframe = document.getElementById('cloudVideoIframe');
+                        // Set the src with autoplay parameter
+                        iframe.src = "https://www.youtube.com/embed/j5Zsa_eOXeY?si=zcDTPhzjEt7w9UO9&autoplay=1";
+                        modal.style.display = 'block';
+                    } else if (this.id === 'mern-play-button') {
+                        const modal = document.getElementById('mernVideoModal');
+                        const iframe = document.getElementById('mernVideoIframe');
+                        // Set the src with autoplay parameter
+                        iframe.src = "https://www.youtube.com/embed/CvCiNeLnZ00?si=qoLwIREr9qhVJCAw&autoplay=1";
+                        modal.style.display = 'block';
+                    } else if (this.id === 'ai-play-button') {
+                        const modal = document.getElementById('aiVideoModal');
+                        const iframe = document.getElementById('aiVideoIframe');
+                        // Set the src with autoplay parameter
+                        iframe.src = "https://www.youtube.com/embed/5NgNicANyqM?si=kaijmty7dP_spyaN&autoplay=1";
+                        modal.style.display = 'block';
+                    } else if (this.id === 'mobile-play-button') {
+                        const modal = document.getElementById('mobileVideoModal');
+                        const iframe = document.getElementById('mobileVideoIframe');
+                        // Set the src with autoplay parameter
+                        iframe.src = "https://www.youtube.com/embed/u64gyCdqawU?si=ZyWfyDh5zT5bZVed&autoplay=1";
+                        modal.style.display = 'block';
+                    } else {
+                        alert(`Video preview for "${courseTitle}" would play here`);
+                    }
+                });
+            });
+        });
+    </script>
+    
+    <!-- Add/Edit Course Modal -->
+    <div id="course-modal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); overflow: auto;">
+        <div class="modal-content" style="background-color: white; margin: 10% auto; padding: 30px; border-radius: 10px; width: 50%; max-width: 600px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); position: relative;">
+            <span class="close-modal" style="position: absolute; right: 20px; top: 15px; font-size: 24px; font-weight: bold; cursor: pointer; color: #6c757d;">&times;</span>
+            <div class="modal-header" style="margin-bottom: 20px;">
+                <h3 id="modal-title" style="color: #343a40; margin-bottom: 5px;">Add New Course</h3>
+                <p>Enter course details below</p>
+            </div>
+            <form id="course-form">
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="course-name" style="display: block; margin-bottom: 5px; font-weight: 500;">Course Name</label>
+                    <input type="text" id="course-name" placeholder="Enter course name" required style="width: 100%; padding: 10px 15px; border: 1px solid #ced4da; border-radius: 5px; font-size: 14px;">
+                </div>
+                <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 30px;">
+                    <button type="button" class="btn btn-secondary" id="cancel-btn" style="padding: 10px 20px; border-radius: 5px; font-weight: 500; cursor: pointer; border: none; background-color: #6c757d; color: white;">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="save-btn" style="padding: 10px 20px; border-radius: 5px; font-weight: 500; cursor: pointer; border: none; background-color: #007bff; color: white;">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

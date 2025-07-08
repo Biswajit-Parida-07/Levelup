@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - LMS Platform</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* User Management specific styles */
+        .dashboard-container {
+            display: flex;
+            min-height: calc(100vh - 70px);
+        }
+        
+        .sidebar {
+            width: 250px;
+            background-color: #343a40;
+            color: white;
+            padding: 20px 0;
+            position: fixed;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+        
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-header h3 {
+            color: #007bff;
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-menu li a {
+            display: block;
+            padding: 10px 20px;
+            color: #adb5bd;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .sidebar-menu li a:hover, .sidebar-menu li a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left: 4px solid #007bff;
+        }
+        
+        .sidebar-menu li a.active {
+            color: white;
+            font-weight: 500;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            margin-left: 250px;
+            background-color: #f8f9fa;
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .page-header h2 {
+            margin-bottom: 10px;
+            color: #343a40;
+        }
+
+        .action-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-button:hover {
+            background-color: #0069d9;
+        }
+
+        .filter-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+            position: relative;
+        }
+
+        /* Dropdown label styling with icons */
+        .filter-group label {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 10px;
+            display: block;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-group label i {
+            margin-right: 6px;
+            color: #007bff;
+        }
+        
+        .filter-group.filter-active label {
+            color: #007bff;
+            transform: translateY(-2px);
+        }
+        
+        /* Custom dropdown icon */
+        .dropdown-icon {
+            position: absolute;
+            right: 15px;
+            top: 40px;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            color: #adb5bd;
+            z-index: 1;
+        }
+        
+        .filter-group:hover .dropdown-icon {
+            color: #6c757d;
+        }
+        
+        .filter-group.filter-active .dropdown-icon {
+            color: #007bff;
+            transform: rotate(180deg);
+        }
+        
+        /* Enhanced dropdown styles */
+        .filter-group select {
+            padding: 12px 40px 12px 15px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            font-size: 14px;
+            appearance: none;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+            cursor: pointer;
+            color: #495057;
+            font-weight: 500;
+            position: relative;
+        }
+        
+        .filter-group select:hover {
+            border-color: #b8c2cc;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
+        }
+        
+        .filter-group.filter-active select {
+            border-color: #007bff;
+            background-color: rgba(0, 123, 255, 0.05);
+            color: #007bff;
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.1);
+        }
+        
+        .filter-group select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.15);
+            background-color: white;
+        }
+        
+        .filter-group select option {
+            padding: 10px;
+            background-color: white;
+            color: #495057;
+        }
+        
+        .filter-group select option:hover,
+        .filter-group select option:focus,
+        .filter-group select option:active {
+            background-color: #f0f7ff;
+            color: #007bff;
+        }
+        
+        /* Custom dropdown styles for specific types */
+        #user-type {
+            border-left: 4px solid #6f42c1;
+        }
+        
+        #user-type.filter-active {
+            border-left-color: #6f42c1;
+        }
+        
+        #status {
+            border-left: 4px solid #20c997;
+        }
+        
+        #status.filter-active {
+            border-left-color: #20c997;
+        }
+
+        .search-container {
+            flex-grow: 1;
+            position: relative;
+        }
+        
+        .search-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border: 1px solid #ced4da;
+            border-radius: 30px 0 0 30px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+            border-right: none;
+        }
+        
+        #search-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 0 20px;
+            height: 44px;
+            border-radius: 0 30px 30px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        #search-button:hover {
+            background-color: #0069d9;
+        }
+        
+        #search-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
+        }
+        
+        .search-container::before {
+            content: "\f002";
+            font-family: "Font Awesome 5 Free", Arial, sans-serif;
+            font-weight: 900;
+            position: absolute;
+            left: 18px;
+            top: 38px;
+            color: #adb5bd;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            z-index: 1;
+        }
+        
+        .search-container.filter-active::before {
+            color: #007bff;
+        }
+        
+        .search-container input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.15);
+            background-color: white;
+        }
+        
+        .search-container input:hover {
+            border-color: #b8c2cc;
+        }
+        
+        .search-container input::placeholder {
+            color: #adb5bd;
+            transition: all 0.3s ease;
+        }
+        
+        .search-container input:focus::placeholder {
+            opacity: 0.6;
+            transform: translateX(5px);
+        }
+
+        .data-table {
+            width: 100%;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .data-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th, .data-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .data-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .data-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
+        .status-pending {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+        
+        .status-inactive {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .action-btn-view {
+            background-color: rgba(0, 123, 255, 0.1);
+            color: #007bff;
+        }
+        
+        .action-btn-edit {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+        
+        .action-btn-delete {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 50%;
+            max-width: 600px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            color: #343a40;
+            margin-bottom: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-group select {
+            height: 42px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+            gap: 5px;
+        }
+
+        .pagination-item {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            background-color: white;
+            border: 1px solid #dee2e6;
+            cursor: pointer;
+            color: #007bff;
+        }
+
+        .pagination-item.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .pagination-item:hover:not(.active) {
+            background-color: #f8f9fa;
+        }
+        
+        .filter-active {
+            position: relative;
+        }
+        
+        .filter-active::after {
+            content: '';
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            width: 8px;
+            height: 8px;
+            background-color: #28a745;
+            border-radius: 50%;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: static;
+                height: auto;
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .filter-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .filter-group {
+                width: 100%;
+            }
+
+            .modal-content {
+                width: 90%;
+                margin: 20% auto;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1><a href="../index.html">LMS Platform</a></h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="dashboard.html">📊 Dashboard</a></li>
+                    
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-profile">
+                    <img src="../assets/images/avatars/admin-avatar.png" alt="Profile" class="profile-icon">
+                    <div class="profile-info">
+                        <h4>LBC</h4>
+                        <p>Administrator</p>
+                    </div>
+                </div>
+                <h3>Admin Portal</h3>
+                <p>Welcome back, LBC!</p>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="dashboard.html">📊 Dashboard</a></li>
+                <li><a href="users.html" class="active">👥 User Management</a></li>
+                <li><a href="courses.html">📚 Course Management</a></li>
+                <li><a href="payments.html">💰 Payment Management</a></li>
+                <li><a href="support.html">🎧 Support Help Desk</a></li>
+                <li><a href="../shared/login.html">🚪 Logout</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <h2>User Management</h2>
+                <button class="action-button" id="add-user-btn">+ Add New User</button>
+            </div>
+
+            <div class="filter-container">
+                <div class="filter-group" id="user-type-group">
+                    <label for="user-type">
+                        <i class="fas fa-users"></i> User Type
+                    </label>
+                    <select id="user-type">
+                        <option value="">All Types</option>
+                        <option value="student">Student</option>
+                        <option value="instructor">Instructor</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                    <div class="dropdown-icon">
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="filter-group" id="status-group">
+                    <label for="status">
+                        <i class="fas fa-toggle-on"></i> Status
+                    </label>
+                    <select id="status">
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="pending">Pending</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                    <div class="dropdown-icon">
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="filter-group search-container">
+                    <label for="search">
+                        <i class="fas fa-search"></i> Search
+                    </label>
+                    <div class="search-input-wrapper">
+                    <input type="text" id="search" placeholder="Search by name, email or ID...">
+                        <button type="button" id="search-button" onclick="applyFilters()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>User Type</th>
+                            <th>Joined Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>USR001</td>
+                            <td>Soumya Samal</td>
+                            <td>sss@gmail.com</td>
+                            <td>Student</td>
+                            <td>15 Jan 2024</td>
+                            <td><span class="status-badge status-active">Active</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <span class="action-btn action-btn-view">View</span>
+                                    <span class="action-btn action-btn-edit">Edit</span>
+                                    <span class="action-btn action-btn-delete">Delete</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>USR002</td>
+                            <td>Biswajit Parida</td>
+                            <td>bip@gmail.com</td>
+                            <td>Instructor</td>
+                            <td>12 Feb 2024</td>
+                            <td><span class="status-badge status-active">Active</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <span class="action-btn action-btn-view">View</span>
+                                    <span class="action-btn action-btn-edit">Edit</span>
+                                    <span class="action-btn action-btn-delete">Delete</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>USR003</td>
+                            <td>LBC</td>
+                            <td>lbc@gmail.com</td>
+                            <td>Admin</td>
+                            <td>05 Dec 2023</td>
+                            <td><span class="status-badge status-active">Active</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <span class="action-btn action-btn-view">View</span>
+                                    <span class="action-btn action-btn-edit">Edit</span>
+                                    <span class="action-btn action-btn-delete">Delete</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>USR004</td>
+                            <td>Emily Davis</td>
+                            <td>emilydavis@gmail.com</td>
+                            <td>Student</td>
+                            <td>23 Mar 2024</td>
+                            <td><span class="status-badge status-pending">Pending</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <span class="action-btn action-btn-view">View</span>
+                                    <span class="action-btn action-btn-edit">Edit</span>
+                                    <span class="action-btn action-btn-delete">Delete</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>USR005</td>
+                            <td>Michael Brown</td>
+                            <td>michaelbrown@gmail.com</td>
+                            <td>Instructor</td>
+                            <td>10 Apr 2023</td>
+                            <td><span class="status-badge status-inactive">Inactive</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <span class="action-btn action-btn-view">View</span>
+                                    <span class="action-btn action-btn-edit">Edit</span>
+                                    <span class="action-btn action-btn-delete">Delete</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>USR006</td>
+                            <td>Sarah Wilson</td>
+                            <td>sarahwilson@gmail.com</td>
+                            <td>Student</td>
+                            <td>02 May 2023</td>
+                            <td><span class="status-badge status-active">Active</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <span class="action-btn action-btn-view">View</span>
+                                    <span class="action-btn action-btn-edit">Edit</span>
+                                    <span class="action-btn action-btn-delete">Delete</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>USR007</td>
+                            <td>David Lee</td>
+                            <td>davidlee@gmail.com</td>
+                            <td>Student</td>
+                            <td>18 Jun 2023</td>
+                            <td><span class="status-badge status-pending">Pending</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <span class="action-btn action-btn-view">View</span>
+                                    <span class="action-btn action-btn-edit">Edit</span>
+                                    <span class="action-btn action-btn-delete">Delete</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>USR008</td>
+                            <td>Lisa Chen</td>
+                            <td>lisachen@gmail.com</td>
+                            <td>Instructor</td>
+                            <td>07 Jul 2023</td>
+                            <td><span class="status-badge status-active">Active</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <span class="action-btn action-btn-view">View</span>
+                                    <span class="action-btn action-btn-edit">Edit</span>
+                                    <span class="action-btn action-btn-delete">Delete</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- No Users Found Message -->
+            <div id="no-users-message" style="display: none; text-align: center; padding: 40px 20px; background-color: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); margin-bottom: 30px;">
+                <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" alt="No users found" style="width: 120px; margin-bottom: 20px; opacity: 0.5;">
+                <h3 style="color: #6c757d; margin-bottom: 10px;">No Users Found</h3>
+                <p style="color: #adb5bd;">We couldn't find any users matching your filter criteria.</p>
+                <button class="btn btn-primary" style="margin-top: 20px;" onclick="resetFilters()">Reset Filters</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit User Modal -->
+    <div id="user-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="modal-header">
+                <h3 id="modal-title">Add New User</h3>
+                <p>Enter user details below</p>
+            </div>
+            <form id="user-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="user-id">User ID</label>
+                        <input type="text" id="user-id" placeholder="Auto-generated" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="user-type-input">User Type</label>
+                        <select id="user-type-input" required>
+                            <option value="">Select Type</option>
+                            <option value="Student">Student</option>
+                            <option value="Instructor">Instructor</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="first-name">First Name</label>
+                        <input type="text" id="first-name" placeholder="Enter first name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="last-name">Last Name</label>
+                        <input type="text" id="last-name" placeholder="Enter last name" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="Enter email address" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Enter password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-password">Confirm Password</label>
+                        <input type="password" id="confirm-password" placeholder="Confirm password" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <input type="tel" id="phone" placeholder="Enter phone number">
+                    </div>
+                    <div class="form-group">
+                        <label for="status-input">Status</label>
+                        <select id="status-input" required>
+                            <option value="active">Active</option>
+                            <option value="pending">Pending</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancel-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="save-btn">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript for user management functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('user-modal');
+            const addUserBtn = document.getElementById('add-user-btn');
+            const closeModal = document.querySelector('.close-modal');
+            const cancelBtn = document.getElementById('cancel-btn');
+            const userForm = document.getElementById('user-form');
+            
+            // Filter functionality
+            const userTypeFilter = document.getElementById('user-type');
+            const statusFilter = document.getElementById('status');
+            const searchInput = document.getElementById('search');
+            
+            // Function to apply filters
+            function applyFilters() {
+                const selectedType = userTypeFilter.value.toLowerCase();
+                const selectedStatus = statusFilter.value.toLowerCase();
+                const searchTerm = searchInput.value.toLowerCase();
+                
+                // Update visual indicators for active filters
+                document.getElementById('user-type-group').classList.toggle('filter-active', selectedType !== '');
+                document.getElementById('status-group').classList.toggle('filter-active', selectedStatus !== '');
+                searchInput.parentElement.parentElement.classList.toggle('filter-active', searchTerm !== '');
+                
+                const rows = document.querySelectorAll('.data-table tbody tr');
+                let visibleRowCount = 0;
+                
+                rows.forEach(row => {
+                    const userType = row.cells[3].textContent.toLowerCase();
+                    const statusElement = row.cells[5].querySelector('.status-badge');
+                    const status = statusElement ? statusElement.textContent.toLowerCase() : '';
+                    const name = row.cells[1].textContent.toLowerCase();
+                    const email = row.cells[2].textContent.toLowerCase();
+                    const id = row.cells[0].textContent.toLowerCase();
+                    
+                    // Check if row matches all selected filters
+                    const typeMatch = selectedType === '' || userType === selectedType;
+                    const statusMatch = selectedStatus === '' || status === selectedStatus;
+                    const searchMatch = searchTerm === '' || 
+                                        name.includes(searchTerm) || 
+                                        email.includes(searchTerm) || 
+                                        id.includes(searchTerm);
+                    
+                    // Show or hide the row based on filter match
+                    if (typeMatch && statusMatch && searchMatch) {
+                        row.style.display = '';
+                        visibleRowCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+                
+                // Toggle no users message
+                const noUsersMessage = document.getElementById('no-users-message');
+                const dataTable = document.querySelector('.data-table');
+                
+                if (visibleRowCount === 0) {
+                    dataTable.style.display = 'none';
+                    noUsersMessage.style.display = 'block';
+                } else {
+                    dataTable.style.display = 'block';
+                    noUsersMessage.style.display = 'none';
+                }
+                
+                console.log(`Filters applied - Type: ${selectedType}, Status: ${selectedStatus}, Search: ${searchTerm}, Visible rows: ${visibleRowCount}`);
+            }
+            
+            // Function to reset all filters
+            function resetFilters() {
+                userTypeFilter.value = '';
+                statusFilter.value = '';
+                searchInput.value = '';
+                applyFilters();
+            }
+            
+            // Make resetFilters globally accessible
+            window.resetFilters = resetFilters;
+            
+            // Add event listeners for filter changes
+            userTypeFilter.addEventListener('change', applyFilters);
+            statusFilter.addEventListener('change', applyFilters);
+            searchInput.addEventListener('input', applyFilters);
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    applyFilters();
+                }
+            });
+            
+            // Show modal when Add New User button is clicked
+            addUserBtn.addEventListener('click', function() {
+                document.getElementById('modal-title').textContent = 'Add New User';
+                userForm.reset();
+                modal.style.display = 'block';
+            });
+            
+            // Close modal when X is clicked
+            closeModal.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+            
+            // Close modal when Cancel button is clicked
+            cancelBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+            
+            // Close modal when clicking outside of it
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+            
+            // Handle form submission
+            userForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                // Here you would handle the form data
+                const firstName = document.getElementById('first-name').value;
+                const lastName = document.getElementById('last-name').value;
+                const email = document.getElementById('email').value;
+                const userType = document.getElementById('user-type-input').value;
+                
+                console.log(`User added: ${firstName} ${lastName}, ${email}, ${userType}`);
+                
+                // Close the modal after submission
+                modal.style.display = 'none';
+            });
+            
+            // Edit user functionality
+            const editButtons = document.querySelectorAll('.action-btn-edit');
+            editButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const userId = row.cells[0].textContent;
+                    const name = row.cells[1].textContent.split(' ');
+                    const email = row.cells[2].textContent;
+                    const userType = row.cells[3].textContent;
+                    const status = row.cells[5].querySelector('.status-badge').textContent.toLowerCase();
+                    
+                    // Populate the form with user data
+                    document.getElementById('modal-title').textContent = 'Edit User';
+                    document.getElementById('user-id').value = userId;
+                    document.getElementById('first-name').value = name[0] || '';
+                    document.getElementById('last-name').value = name[1] || '';
+                    document.getElementById('email').value = email;
+                    document.getElementById('user-type-input').value = userType;
+                    document.getElementById('status-input').value = status;
+                    
+                    // Show the modal
+                    modal.style.display = 'block';
+                });
+            });
+            
+            // Delete user functionality
+            const deleteButtons = document.querySelectorAll('.action-btn-delete');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const userId = row.cells[0].textContent;
+                    const name = row.cells[1].textContent;
+                    
+                    if (confirm(`Are you sure you want to delete user ${name} (${userId})?`)) {
+                        // Here you would handle the deletion
+                        console.log(`User deleted: ${userId}`);
+                        row.remove();
+                    }
+                });
+            });
+            
+            // View user functionality
+            const viewButtons = document.querySelectorAll('.action-btn-view');
+            viewButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const userId = row.cells[0].textContent;
+                    const name = row.cells[1].textContent;
+                    const email = row.cells[2].textContent;
+                    const userType = row.cells[3].textContent;
+                    
+                    alert(`User Details:\nID: ${userId}\nName: ${name}\nEmail: ${email}\nType: ${userType}`);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

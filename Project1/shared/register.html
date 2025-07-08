@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - LEVELUP📈</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        .register-container {
+            max-width: 600px;
+            margin: 60px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .register-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .register-header h2 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        
+        .form-group input.error, .form-group select.error {
+            border-color: #dc3545;
+        }
+        
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .form-footer {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .form-footer p {
+            margin-top: 15px;
+        }
+        
+        .btn-register {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+        }
+        
+        .user-type-selector {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .user-type-selector label {
+            margin: 0 10px;
+            cursor: pointer;
+        }
+        
+        .user-type-selector input {
+            margin-right: 5px;
+        }
+        
+        .terms-checkbox {
+            display: flex;
+            align-items: flex-start;
+            margin-top: 20px;
+        }
+        
+        .terms-checkbox input {
+            width: auto;
+            margin-right: 10px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1><a href="../index.html">LEVELUP📈</a></h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="register.html" class="active">Register</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="register-container">
+                <div class="register-header">
+                    <h2>Create Your Account</h2>
+                    <p>Join our learning community and start your journey</p>
+                </div>
+                
+                <form id="register-form" action="#" method="post">
+                    <div class="user-type-selector">
+                        <label>
+                            <input type="radio" name="user-type" value="student" checked>
+                            Student
+                        </label>
+                        <label>
+                            <input type="radio" name="user-type" value="instructor">
+                            Instructor
+                        </label>
+                        <label>
+                            <input type="radio" name="user-type" value="admin">
+                            Administrator
+                        </label>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="first-name">First Name</label>
+                            <input type="text" id="first-name" name="first-name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="last-name">Last Name</label>
+                            <input type="text" id="last-name" name="last-name" pattern="[A-Za-z]*" title="Please enter only letters" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="confirm-password">Confirm Password</label>
+                            <input type="password" id="confirm-password" name="confirm-password" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Student-specific fields -->
+                    <div id="student-fields">
+                        <div class="form-group">
+                            <label for="education-level">Education Level</label>
+                            <select id="education-level" name="education-level" required>
+                                <option value="">Select your education level</option>
+                                <option value="high-school">High School</option>
+                                <option value="undergraduate">Undergraduate</option>
+                                <option value="graduate">Graduate</option>
+                                <option value="postgraduate">Postgraduate</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Instructor-specific fields -->
+                    <div id="instructor-fields" style="display: none;">
+                        <!-- Education Qualification Section -->
+                        <div class="education-qualification">
+                            <h3 style="margin-top: 20px; margin-bottom: 15px; color: #007bff;">Education Qualification</h3>
+                            
+                            <div class="form-group">
+                                <label for="highest-degree">Highest Degree</label>
+                                <select id="highest-degree" name="highest-degree" required>
+                                    <option value="">Select your highest degree</option>
+                                    <option value="bachelors">Bachelor's Degree</option>
+                                    <option value="masters">Master's Degree</option>
+                                    <option value="phd">Ph.D.</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="institution">Institution</label>
+                                <input type="text" id="institution" name="institution" placeholder="University/College Name" required>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="field-of-study">Field of Study</label>
+                                    <input type="text" id="field-of-study" name="field-of-study" placeholder="Major/Specialization">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="graduation-year">Graduation Year</label>
+                                    <input type="number" id="graduation-year" name="graduation-year" min="1950" max="2030" placeholder="YYYY" required>
+                                </div>
+                            </div>
+                            
+                            <!-- Specialization and years of experience added to education qualification section -->
+                            <div class="form-group">
+                                <label for="specialization">Specialization</label>
+                                <input type="text" id="specialization" name="specialization" placeholder="e.g., Computer Science, Mathematics, etc." required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="experience">Years of Experience</label>
+                                <input type="number" id="experience" name="experience" min="0">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Admin-specific fields -->
+                    <div id="admin-fields" style="display: none;">
+                        <!-- Admin code field removed as requested -->
+                    </div>
+                    
+                    <div class="terms-checkbox">
+                        <input type="checkbox" id="terms" name="terms" required>
+                        <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-register">Create Account</button>
+                    
+                    <div class="form-footer">
+                        <p>Already have an account? <a href="login.html">Login</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    
+
+    <script src="../assets/js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const registerForm = document.getElementById('register-form');
+            const userTypeRadios = document.querySelectorAll('input[name="user-type"]');
+            const studentFields = document.getElementById('student-fields');
+            const instructorFields = document.getElementById('instructor-fields');
+            const adminFields = document.getElementById('admin-fields');
+            const passwordField = document.getElementById('password');
+            const confirmPasswordField = document.getElementById('confirm-password');
+            const firstNameField = document.getElementById('first-name');
+            const lastNameField = document.getElementById('last-name');
+            
+            // Add input validation for first name and last name
+            firstNameField.addEventListener('input', function(e) {
+                const value = e.target.value;
+                if (/\d/.test(value)) {
+                    alert('First name should only contain letters!');
+                    e.target.value = value.replace(/\d/g, '');
+                }
+            });
+
+            lastNameField.addEventListener('input', function(e) {
+                const value = e.target.value;
+                if (/\d/.test(value)) {
+                    alert('Last name should only contain letters!');
+                    e.target.value = value.replace(/\d/g, '');
+                }
+            });
+            
+            // Toggle user-specific fields based on selected user type
+            userTypeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    // Hide all specific fields first
+                    studentFields.style.display = 'none';
+                    instructorFields.style.display = 'none';
+                    adminFields.style.display = 'none';
+                    
+                    // Show fields based on selected user type
+                    switch(this.value) {
+                        case 'student':
+                            studentFields.style.display = 'block';
+                            break;
+                        case 'instructor':
+                            instructorFields.style.display = 'block';
+                            break;
+                        case 'admin':
+                            adminFields.style.display = 'block';
+                            break;
+                    }
+                });
+            });
+            
+            // Form submission handling
+            registerForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validate password match
+                if (passwordField.value !== confirmPasswordField.value) {
+                    confirmPasswordField.classList.add('error');
+                    
+                    // Add error message if it doesn't exist
+                    let errorMsg = confirmPasswordField.nextElementSibling;
+                    if (!errorMsg || !errorMsg.classList.contains('error-message')) {
+                        errorMsg = document.createElement('div');
+                        errorMsg.className = 'error-message';
+                        errorMsg.textContent = 'Passwords do not match';
+                        confirmPasswordField.parentNode.insertBefore(errorMsg, confirmPasswordField.nextSibling);
+                    }
+                    return;
+                }
+                
+                // Get selected user type
+                let userType;
+                userTypeRadios.forEach(radio => {
+                    if (radio.checked) {
+                        userType = radio.value;
+                    }
+                });
+                
+                // In a real application, you would send this data to a server for registration
+                console.log(`Registration attempt as ${userType}`);
+                
+                // Simulate successful registration and redirect to login
+                alert('Registration successful! Please login with your credentials.');
+                window.location.href = 'login.html';
+            });
+            
+            // Pre-select user type if specified in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const typeParam = urlParams.get('type');
+            if (typeParam) {
+                userTypeRadios.forEach(radio => {
+                    if (radio.value === typeParam) {
+                        radio.checked = true;
+                        radio.dispatchEvent(new Event('change'));
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+/* Profile Icons and User Dropdown Styles */
+
+/* User dropdown in header with profile icon */
+.user-profile {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.user-profile:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.profile-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.profile-name {
+    font-weight: 500;
+    margin-right: 5px;
+}
+
+/* Sidebar profile section */
+.sidebar-profile {
+    display: flex;
+    align-items: center;
+    padding: 0 20px 15px;
+    margin-bottom: 10px;
+}
+
+.sidebar-profile .profile-icon {
+    width: 40px;
+    height: 40px;
+}
+
+.sidebar-profile .profile-info {
+    margin-left: 10px;
+}
+
+.sidebar-profile .profile-info h4 {
+    margin: 0;
+    color: #fff;
+    font-size: 16px;
+}
+
+.sidebar-profile .profile-info p {
+    margin: 0;
+    color: #adb5bd;
+    font-size: 12px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .profile-name {
+        display: none;
+    }
+    
+    .user-profile {
+        padding: 5px;
+    }
+    
+    .profile-icon {
+        margin-right: 0;
+    }
+}
