@@ -44,7 +44,7 @@ Levelup📈 is a comprehensive Learning Management System designed to facilitate
 ## Project Structure
 
 ```
-lms-frontend/
+Levelup📈-frontend/
 ├── admin/                  # Admin portal pages
 │   ├── dashboard.html      # Admin dashboard
 │   ├── users.html          # User management
