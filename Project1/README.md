@@ -1,8 +1,8 @@
-# LMS Platform - Learning Management System
+# Levelup📈
 
 ## Overview
 
-LMS Platform is a comprehensive Learning Management System designed to facilitate online education for students, instructors, and educational institutions. The platform provides an intuitive interface for course management, student enrollment, content delivery, and administrative functions.
+Levelup📈 is a comprehensive Learning Management System designed to facilitate online education for students, instructors, and educational institutions. The platform provides an intuitive interface for course management, student enrollment, content delivery, and administrative functions.
 
 ## Features
 
